@@ -10,7 +10,7 @@ namespace MPS{
     // Note this is a wrapper from the function provided in the aces-dev library
     // [in]     linear      floating point 0-1
     // [return] PQ encoded  floating point 0-1
-    float linear_2_PQ(const float input);
+    float Linear_2_PQ(const float input);
 
     // Performs the SMPTE ST2084 transform from PQ to linear light (EETF)
     // Note this is a wrapper from the function provided in the aces-dev library
