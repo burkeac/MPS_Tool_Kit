@@ -5,7 +5,7 @@ These files are designed to become a libary, but is in early development.
 
 # Building
 Files can be compiled using cmake. Example:
-  $ mkdir build
-  $ cd build
-  $ cmake ..
-  $ make
+  '$ mkdir build'
+  '$ cd build'
+  '$ cmake ..'
+  '$ make'
