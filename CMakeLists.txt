@@ -10,11 +10,15 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 
 add_library(MPSToolKit SHARED
             ./src/TransferFunctions/HDR_TranFunc.cpp
-            ./src/TransferFunctions/HDR_TranFunc.hpp)
+            ./src/TransferFunctions/HDR_TranFunc.hpp
+            ./src/Color/ColorSpaces.cpp
+            ./src/Color/ColorSpaces.hpp)
 
-add_executable(EETF
-                ./apps/Calculate_PQ_EETF.cpp)
+add_executable(EETF ./apps/Calculate_PQ_EETF.cpp)
+add_executable(GetPrimaries ./apps/GetPrimaries.cpp)
 
-include_directories(./src/TransferFunctions)
+include_directories(./src/TransferFunctions
+                    ./src/Color)
 
 target_link_libraries(EETF MPSToolKit)
+target_link_libraries(GetPrimaries MPSToolKit)
