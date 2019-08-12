@@ -9,11 +9,12 @@ using namespace std;
 
 int main(){
     MPS::colorPrimaries Rec709;
-    Rec709.SelectPrimary(MPS::Rec2020);
+    Rec709.selectPrimary(MPS::Rec2020);
 
-    for(int i=0; i<Rec709.Primaries.size(); i++){
-        cout << Rec709.Primaries[i] << endl;
-    }
+    Rec709.printPrimaries();
+    
+    MPS::phosphorMatrix PM(Rec709, Rec709);
+    
 
     return EXIT_SUCCESS;
 }
