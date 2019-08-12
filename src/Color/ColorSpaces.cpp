@@ -23,8 +23,15 @@ const vector<float> ACES_P1_Primaries  = {0.713, 0.293, 0.165, 0.830, 0.128, 0.0
 const vector<float> ACES_WhitePoint    = {0.32168, 0.33767};
 
 namespace MPS{
-    
-    void MPS::colorPrimaries::SelectPrimary(int colorspace){
+    //Member Functions of MPS colorPrimaries Class
+    MPS::colorPrimaries::colorPrimaries(){
+        Primaries = vector<float> {0,0,0,0,0,0}; 
+        WhitePoint = vector<float> {0,0};
+    }
+    MPS::colorPrimaries::colorPrimaries(int colorSpace){
+        MPS::colorPrimaries::selectPrimary(colorSpace);
+    }
+    void MPS::colorPrimaries::selectPrimary(int colorspace){
         switch (colorspace){
             case MPS::Rec709: 
                 Primaries = Rec709_Primaries; 
@@ -56,4 +63,24 @@ namespace MPS{
         }
     }
 
+    void MPS::colorPrimaries::printPrimaries(){
+        cout << "Red x: " << Primaries[0] << endl;
+        cout << "Red y: " << Primaries[1] << endl;
+        cout << "Green x: " << Primaries[2] << endl;
+        cout << "Green y: " << Primaries[3] << endl;
+        cout << "Blue x: " << Primaries[4] << endl;
+        cout << "Blue y: " << Primaries[5] << endl;
+    }
+
+// Member Functions for phosphorMatrix Class
+    MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries primaries){
+        cout << "1 vars" << endl;
+    };
+    MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries primarySet1, MPS::colorPrimaries primarySet2){
+        cout << "2 vars" << endl;
+    };
+
+    MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries primaries){
+        
+    }
 }

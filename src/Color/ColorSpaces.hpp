@@ -14,13 +14,22 @@ namespace MPS {
 
     class colorPrimaries {
         public:
+            colorPrimaries();
+            colorPrimaries(int colorSpace);
             vector<float> Primaries;
             vector<float> WhitePoint;
-            void SelectPrimary(int colorspace);
+            void selectPrimary(int colorspace);
+            void printPrimaries();
+            
     };
 
     class phosphorMatrix {
-
+        public:
+            phosphorMatrix(MPS::colorPrimaries primaries);
+            phosphorMatrix(MPS::colorPrimaries primarySet1, MPS::colorPrimaries primarySet2);
+            void generatePM(MPS::colorPrimaries primaries);
+            
+            
     };
 
 }
