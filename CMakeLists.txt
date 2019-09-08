@@ -25,6 +25,7 @@ target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})
 # Compile the executables
 add_executable(EETF ./apps/Calculate_PQ_EETF.cpp)
 add_executable(GetPrimaries ./apps/GetPrimaries.cpp)
+add_executable(ToICtCp ./apps/ToICtCp.cpp)
 
 # Show Cmake where to find the header files
 include_directories(./src/TransferFunctions
@@ -33,3 +34,4 @@ include_directories(./src/TransferFunctions
 # Links the MPS toolkit library to Apps
 target_link_libraries(EETF MPSToolKit)
 target_link_libraries(GetPrimaries MPSToolKit)
+target_link_libraries(ToICtCp MPSToolKit)

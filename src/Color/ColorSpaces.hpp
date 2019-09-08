@@ -46,5 +46,6 @@ namespace MPS {
             cv::Mat _invPM;
     };
 
+    std::vector<float> Rec2020_to_ICtCp(float R, float G, float B);
 }
 #endif

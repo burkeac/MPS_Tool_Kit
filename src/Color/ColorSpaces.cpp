@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include "ColorSpaces.hpp"
+#include "HDR_TranFunc.hpp"
 
 using namespace std;
 
@@ -178,4 +179,26 @@ namespace MPS{
     cv::Mat MPS::phosphorMatrix::getInvPM(){
         return _invPM;
     };
+
+    // Linear RGB Rec 2020 CVs normalized 0 to 1.
+    // Returns std::vector of floats in I Ct Cp format.
+    std::vector<float> Rec2020_to_ICtCp(float R, float G, float B){
+        float L = (1688.0 * R + 2146.0 * G + 262.0  * B) / 4096.0;
+        float M = (683.0  * R + 2951.0 * G + 462.0  * B) / 4096.0;
+        float S = (99.0   * R + 309.0  * G + 3688.0 * B) / 4096.0;
+
+        float L_prime = MPS::Linear_2_PQ(L);
+        float M_prime = MPS::Linear_2_PQ(M);
+        float S_prime = MPS::Linear_2_PQ(S);
+
+        float I  = 0.5 * L_prime + 0.5 * M_prime;
+        float Ct = (6610.0 * L_prime - 13613.0 * M_prime + 7003.0 * S_prime) / 4096.0;
+        float Cp = (17933.0 * L_prime - 17390.0 * M_prime - 543.0 * S_prime) / 4096.0;
+
+        vector<float> ICtCp;
+        ICtCp.push_back(I);
+        ICtCp.push_back(Ct);
+        ICtCp.push_back(Cp);
+        return ICtCp;
+    }
 }
