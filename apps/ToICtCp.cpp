@@ -5,12 +5,14 @@
 #include <iostream>
 #include "ColorSpaces.hpp"
 #include <vector>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
 int main(int argv, char * argc[]){
 
-    if(argv != 4) return EXIT_FAILURE;
+    if(argv == 4){
     
     float R = stof(argc[1]);
     float G = stof(argc[2]);
@@ -27,4 +29,23 @@ int main(int argv, char * argc[]){
     cout << "[out] Cp: " << ICtCp[2] << endl;
 
     return EXIT_SUCCESS;
+    }else if(argv == 2){
+        //file
+        string line, R, G, B;
+        fstream input(argc[1]);
+        if(input.is_open()){
+
+            vector<float> ICtCp;
+            while(!input.eof()){
+
+                input >> R; input >> G; input >> B;
+  
+                ICtCp = MPS::Rec2020_to_ICtCp( stof(R), stof(G), stof(B) );
+                cout << ICtCp[0] << "," << ICtCp[1] << "," << ICtCp[2] << endl;
+            }
+            input.close();
+        }
+    }else{ 
+        return EXIT_FAILURE;
+    }
 }
