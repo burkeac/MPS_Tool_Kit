@@ -23,7 +23,7 @@ add_library(MPSToolKit SHARED
 target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})
 
 # Compile the executables
-add_executable(EETF ./apps/Calculate_PQ_EETF.cpp)
+add_executable(EOTF ./apps/Calculate_PQ_EOTF.cpp)
 add_executable(GetPrimaries ./apps/GetPrimaries.cpp)
 add_executable(ToICtCp ./apps/ToICtCp.cpp)
 
@@ -32,6 +32,6 @@ include_directories(./src/TransferFunctions
                     ./src/Color)
 
 # Links the MPS toolkit library to Apps
-target_link_libraries(EETF MPSToolKit)
+target_link_libraries(EOTF MPSToolKit)
 target_link_libraries(GetPrimaries MPSToolKit)
 target_link_libraries(ToICtCp MPSToolKit)
