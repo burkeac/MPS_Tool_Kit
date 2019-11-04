@@ -14,3 +14,4 @@ Files can be compiled using cmake. Example:
   $ cmake ..
   $ make
   ```
+In this build directory, there will be two subdirectories, apps and libs. The apps directory contains command line interface (CLI) applications, leveraging many of the library functions and classes. The libs directory contains the library files that can be linked to other projects.
