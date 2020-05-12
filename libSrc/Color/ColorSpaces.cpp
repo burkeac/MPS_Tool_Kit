@@ -3,9 +3,10 @@
 // July 28, 2019
 
 #include <iostream>
-#include <vector>
 #include "ColorSpaces.hpp"
 #include "HDR_TranFunc.hpp"
+#include "../Eigen/Core"
+#include "../Eigen/Eigen"
 
 using namespace std;
 
@@ -24,15 +25,17 @@ const vector<float> ACES_P1_Primaries  = {0.713, 0.293, 0.165, 0.830, 0.128, 0.0
 const vector<float> ACES_WhitePoint    = {0.32168, 0.33767};
 
 namespace MPS{
-    //Member Functions of MPS colorPrimaries Class
+    // Implementations for the colorPrimaries class
+        // Constructors
     MPS::colorPrimaries::colorPrimaries(){
         Primaries = vector<float> {0,0,0,0,0,0}; 
         WhitePoint = vector<float> {0,0};
     }
-    MPS::colorPrimaries::colorPrimaries(int colorSpace){
+    MPS::colorPrimaries::colorPrimaries(MPS::ColorSpaces colorSpace){
         MPS::colorPrimaries::selectPrimary(colorSpace);
     }
-    void MPS::colorPrimaries::selectPrimary(int colorspace){
+        // Methods of MPS colorPrimaries Class
+    void MPS::colorPrimaries::selectPrimary(MPS::ColorSpaces colorspace){
         switch (colorspace){
             case MPS::Rec709: 
                 Primaries = Rec709_Primaries; 
@@ -65,15 +68,15 @@ namespace MPS{
     }
 
     void MPS::colorPrimaries::printPrimaries(){
-        cout << "Red x: " << Primaries[0] << endl;
-        cout << "Red y: " << Primaries[1] << endl;
-        cout << "Green x: " << Primaries[2] << endl;
-        cout << "Green y: " << Primaries[3] << endl;
-        cout << "Blue x: " << Primaries[4] << endl;
-        cout << "Blue y: " << Primaries[5] << endl;
+        cout << "Red x: " << Primaries[0] << "\n"
+             << "Red y: " << Primaries[1] << "\n"
+             << "Green x: " << Primaries[2] << "\n"
+             << "Green y: " << Primaries[3] << "\n"
+             << "Blue x: " << Primaries[4] << "\n"
+             << "Blue y: " << Primaries[5] << endl;
     }
 
-    float MPS::colorPrimaries::getChromaPoint(int chromaPoint){
+    float MPS::colorPrimaries::getChromaPoint(ChromaPoint chromaPoint){
         switch(chromaPoint){
             case MPS::xRed: return(Primaries[0]); break;
             case MPS::yRed: return(Primaries[1]); break;
@@ -104,79 +107,63 @@ namespace MPS{
 
     // PM Constructor for double primary input. Used for going from a primary to a second set and vice-versa
     MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries primarySet1, MPS::colorPrimaries primarySet2){
-        cv::Mat PM1 = generatePMs(primarySet1, 1, 1, false);
-        cv::Mat PM2 = generatePMs(primarySet2, 1, 1, false);
-        _PM = PM2.inv() * PM1;
-        _invPM = _PM.inv();
+        Eigen::Matrix3f PM1 = generatePMs(primarySet1, 1, 1, false);
+        Eigen::Matrix3f PM2 = generatePMs(primarySet2, 1, 1, false);
+        _PM = PM2.inverse() * PM1;
+        _invPM = _PM.inverse();
     };
 
     // Generate and return the phosphore matrix. 
     // Also sets the the _PM memember
-    cv::Mat MPS::phosphorMatrix::generatePMs(MPS::colorPrimaries primaries, float actualLum, float aimLum, bool setMembers){
-        cv::Mat PM, C_matrix, C_inverse, W_vector, J_Matrix;
-        PM.create(3,3,CV_32F);
-        C_matrix.create(3,3,CV_32F);
-        C_inverse.create(3,3,CV_32F);
-        W_vector.create(3,3,CV_32F);
+    Eigen::Matrix3f MPS::phosphorMatrix::generatePMs(MPS::colorPrimaries primaries, 
+                                                    float actualLum, 
+                                                    float aimLum, 
+                                                    bool setMembers){
 
         // Fill the (C) Matrix
-        C_matrix.at<float>(0,0) = primaries.getChromaPoint(MPS::ChromaPoint::xRed);
-        C_matrix.at<float>(0,1) = primaries.getChromaPoint(MPS::ChromaPoint::xGreen);
-        C_matrix.at<float>(0,2) = primaries.getChromaPoint(MPS::ChromaPoint::xBlue);
-        C_matrix.at<float>(1,0) = primaries.getChromaPoint(MPS::ChromaPoint::yRed);
-        C_matrix.at<float>(1,1) = primaries.getChromaPoint(MPS::ChromaPoint::yGreen);
-        C_matrix.at<float>(1,2) = primaries.getChromaPoint(MPS::ChromaPoint::yBlue);
-        C_matrix.at<float>(2,0) = primaries.getChromaPoint(MPS::ChromaPoint::zRed);
-        C_matrix.at<float>(2,1) = primaries.getChromaPoint(MPS::ChromaPoint::zGreen);
-        C_matrix.at<float>(2,2) = primaries.getChromaPoint(MPS::ChromaPoint::zBlue);
-
-        //Get inverse C matrix 
-        C_inverse = C_matrix.inv();
+        Eigen::Matrix3f C_matrix(3,3);
+        C_matrix << primaries.getChromaPoint(xRed), 
+                    primaries.getChromaPoint(xGreen),
+                    primaries.getChromaPoint(xBlue),
+                    primaries.getChromaPoint(yRed),
+                    primaries.getChromaPoint(yGreen),
+                    primaries.getChromaPoint(yBlue),
+                    primaries.getChromaPoint(zRed),
+                    primaries.getChromaPoint(zGreen),
+                    primaries.getChromaPoint(zBlue);
 
         //load Whitepoint vector
-        W_vector.at<float>(0,0) = primaries.getChromaPoint(MPS::ChromaPoint::xWhite);
-        W_vector.at<float>(1,0) = primaries.getChromaPoint(MPS::ChromaPoint::yWhite);
-        W_vector.at<float>(2,0) = primaries.getChromaPoint(MPS::ChromaPoint::zWhite);
+        Eigen::Vector3f W_vector;
+        W_vector << primaries.getChromaPoint(xWhite),
+                    primaries.getChromaPoint(yWhite),
+                    primaries.getChromaPoint(zWhite);
 
         // Luminance scalar
-        float lumScalar = (actualLum/aimLum)/primaries.getChromaPoint(MPS::ChromaPoint::yWhite);
+        float lumScalar = (actualLum/aimLum)/primaries.getChromaPoint(yWhite);
 
         // multiply the white point vector times the luma scalars to normalize.
         W_vector = W_vector * lumScalar;
 
-        // Multiply the C-1 matrix by the normalized whitepoint vector creating the diagonalized J-matrix
-        J_Matrix.create(3,3,CV_32F);
-        J_Matrix = J_Matrix * 0;
-
-        J_Matrix.at<float>(0,0) = 
-            C_inverse.at<float>(0,0) * W_vector.at<float>(0,0) 
-            + C_inverse.at<float>(0,1) * W_vector.at<float>(1,0) 
-            + C_inverse.at<float>(0,2) * W_vector.at<float>(2,0);
-        J_Matrix.at<float>(1,1) = 
-            C_inverse.at<float>(1,0) * W_vector.at<float>(0,0) 
-            + C_inverse.at<float>(1,1) * W_vector.at<float>(1,0) 
-            + C_inverse.at<float>(1,2) * W_vector.at<float>(2,0);
-        J_Matrix.at<float>(2,2) = 
-            C_inverse.at<float>(2,0) * W_vector.at<float>(0,0) 
-            + C_inverse.at<float>(2,1) * W_vector.at<float>(1,0) 
-            + C_inverse.at<float>(2,2) * W_vector.at<float>(2,0);
+        // Multiply the C^-1 matrix by the normalized whitepoint vector 
+        // creating the diagonalized J-matrix
+        Eigen::Vector3f J_vector = C_matrix.inverse() * W_vector;
 
         //Calculate the PM
-        PM = C_matrix * J_Matrix;
+        Eigen::Matrix3f PM = C_matrix * J_vector.asDiagonal();
 
         // Set the private member and return the matrix.
         if(setMembers){
             _PM = PM;
-            _invPM = PM.inv();
+            _invPM = PM.inverse();
         }
         return PM;
     };
 
-    cv::Mat MPS::phosphorMatrix::getPM(){
+    Eigen::Matrix3f MPS::phosphorMatrix::getPM(){
         return _PM;
     };
 
-    cv::Mat MPS::phosphorMatrix::getInvPM(){
+    Eigen::Matrix3f MPS::phosphorMatrix::getInvPM(){
         return _invPM;
     };
 
