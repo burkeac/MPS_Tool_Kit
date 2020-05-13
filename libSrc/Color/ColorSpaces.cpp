@@ -25,8 +25,8 @@ const vector<float> ACES_P1_Primaries  = {0.713, 0.293, 0.165, 0.830, 0.128, 0.0
 const vector<float> ACES_WhitePoint    = {0.32168, 0.33767};
 
 namespace MPS{
-    // Implementations for the colorPrimaries class
-        // Constructors
+// Implementations for the colorPrimaries class
+    // Constructors
     MPS::colorPrimaries::colorPrimaries(){
         Primaries = vector<float> {0,0,0,0,0,0}; 
         WhitePoint = vector<float> {0,0};
@@ -34,7 +34,8 @@ namespace MPS{
     MPS::colorPrimaries::colorPrimaries(MPS::ColorSpaces colorSpace){
         MPS::colorPrimaries::selectPrimary(colorSpace);
     }
-        // Methods of MPS colorPrimaries Class
+    
+    // Methods of MPS colorPrimaries Class
     void MPS::colorPrimaries::selectPrimary(MPS::ColorSpaces colorspace){
         switch (colorspace){
             case MPS::Rec709: 
@@ -99,14 +100,20 @@ namespace MPS{
         }
     };
 
-    // Member Functions for phosphorMatrix Class
+// Member Functions for phosphorMatrix Class
+    // default constructor inititates with identity matrix
+    MPS::phosphorMatrix::phosphorMatrix(){
+        _PM << 1,0,0,0,1,0,0,0,1;
+        _invPM << 1,0,0,0,1,0,0,0,1;
+    }
+
     // PM Constructor for single primary input. Used for going from a primary set to XYZ and vice-versa
-    MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries primaries){
+    MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries& primaries){
         generatePMs(primaries, 1, 1);
     };
 
     // PM Constructor for double primary input. Used for going from a primary to a second set and vice-versa
-    MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries primarySet1, MPS::colorPrimaries primarySet2){
+    MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries& primarySet1, MPS::colorPrimaries& primarySet2){
         Eigen::Matrix3f PM1 = generatePMs(primarySet1, 1, 1, false);
         Eigen::Matrix3f PM2 = generatePMs(primarySet2, 1, 1, false);
         _PM = PM2.inverse() * PM1;
@@ -115,7 +122,7 @@ namespace MPS{
 
     // Generate and return the phosphore matrix. 
     // Also sets the the _PM memember
-    Eigen::Matrix3f MPS::phosphorMatrix::generatePMs(MPS::colorPrimaries primaries, 
+    Eigen::Matrix3f MPS::phosphorMatrix::generatePMs(MPS::colorPrimaries& primaries, 
                                                     float actualLum, 
                                                     float aimLum, 
                                                     bool setMembers){
@@ -159,33 +166,47 @@ namespace MPS{
         return PM;
     };
 
+    // Return the phosphore matrix as an Eigen::Matrix3f
     Eigen::Matrix3f MPS::phosphorMatrix::getPM(){
         return _PM;
     };
-
+    
+    // Return the phosphore matrix as an Eigen::Matrix3f
     Eigen::Matrix3f MPS::phosphorMatrix::getInvPM(){
         return _invPM;
     };
 
-    // Linear RGB Rec 2020 CVs normalized 0 to 1.
+// Linear RGB Rec 2020 CVs
     // Returns std::vector of floats in I Ct Cp format.
-    std::vector<float> Rec2020_to_ICtCp(float R, float G, float B){
-        float L = (1688.0 * R + 2146.0 * G + 262.0  * B) / 4096.0;
-        float M = (683.0  * R + 2951.0 * G + 462.0  * B) / 4096.0;
-        float S = (99.0   * R + 309.0  * G + 3688.0 * B) / 4096.0;
+    std::vector<float> Rec2020_to_ICtCp(float R, float G, float B, bool PQ, bool scaleToJNDs){
+     
+        //Convert RGB to LMS
+        Eigen::Vector3f RGB; RGB << R, G, B;
+        Eigen::Matrix3f RGBtoLMS; 
+        RGBtoLMS << 1688.0, 2146.0, 262.0, 683.0, 2951.0, 462.0, 99.0, 309.0, 3688.0;
+        Eigen::Vector3f LMS = (1./4096.) * RGBtoLMS* RGB;
 
-        float L_prime = MPS::Linear_2_PQ(L);
-        float M_prime = MPS::Linear_2_PQ(M);
-        float S_prime = MPS::Linear_2_PQ(S);
+        // Make Non-linear LMS
+        if(PQ){
+            LMS(0) = Linear_2_PQ(LMS(0));
+            LMS(1) = Linear_2_PQ(LMS(1));
+            LMS(2) = Linear_2_PQ(LMS(2));
+        }else{
+            LMS(0) = Linear_2_HLG(LMS(0));
+            LMS(1) = Linear_2_HLG(LMS(1));
+            LMS(2) = Linear_2_HLG(LMS(2));
+        }
 
-        float I  = 0.5 * L_prime + 0.5 * M_prime;
-        float Ct = (6610.0 * L_prime - 13613.0 * M_prime + 7003.0 * S_prime) / 4096.0;
-        float Cp = (17933.0 * L_prime - 17390.0 * M_prime - 543.0 * S_prime) / 4096.0;
+        Eigen::Matrix3f LMStoICtCp; 
+        LMStoICtCp << 2048.0, 2048.0, 0.0, 6610.0, -13613.0, 7003.0, 17933.0, -17390.0, -543.0;
+        
+        Eigen::Vector3f ICtCp = (1./4096.) * LMStoICtCp * LMS;
 
-        vector<float> ICtCp;
-        ICtCp.push_back(I);
-        ICtCp.push_back(Ct);
-        ICtCp.push_back(Cp);
-        return ICtCp;
+        vector<float> result;
+        if (scaleToJNDs) result = { ICtCp(0) * (float)720.0, ICtCp(1) * (float)360.0, ICtCp(2) * (float)720.0};
+        else result = { ICtCp(0), ICtCp(1), ICtCp(2)};
+
+        return result;
+        
     }
 }
