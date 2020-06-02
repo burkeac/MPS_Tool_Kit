@@ -17,7 +17,9 @@ add_library(MPSToolKit SHARED
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp
             ./libSrc/TransferFunctions/HDR_TranFunc.hpp
             ./libSrc/Color/ColorSpaces.cpp
-            ./libSrc/Color/ColorSpaces.hpp)
+            ./libSrc/Color/ColorSpaces.hpp
+            ./libSrc/Color/deltaE.cpp
+            ./libSrc/Color/deltaE.hpp)
 
 # Find OpenCV package and Link it to the MPSToolKit Libary
 target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})
