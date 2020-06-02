@@ -2,6 +2,9 @@
 // Adam C. Burke (adam.burke603@gmail.com)
 // June 1, 2020
 
+
+#pragma once
+
 namespace MPS{
 
     class CIEdeltaE {
