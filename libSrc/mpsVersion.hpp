@@ -1,10 +1,8 @@
-#ifndef mpsVersion_hpp
-#define mpsVersion_hpp
+#pragma once
 
 #include <iostream>
 
-void printVersion(){
+std::string printVersion(){
     std::cout << "MPS Tool Kit Version: 1.0 Alpha Development" << std::endl;
+    return("MPS Tool Kit Version: 1.0 Alpha Development");
 }
-
-#endif
