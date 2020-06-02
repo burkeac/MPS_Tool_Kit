@@ -1,0 +1,1 @@
+clang++ test.cpp /Users/adamburke/Documents/2019/MPS_Toolkit/build/libs/libMPSToolKit.dylib -rpath /Users/adamburke/Documents/2019/MPS_Toolkit/build/libs
