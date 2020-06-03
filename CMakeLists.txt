@@ -33,7 +33,8 @@ add_executable(ToICtCp ./appSrc/ToICtCp.cpp)
 
 # Show Cmake where to find the header files
 include_directories(./libSrc/TransferFunctions
-                    ./libSrc/Color)
+                    ./libSrc/Color
+                    ./libSrc/Utilities)
 
 # Links the MPS toolkit library to Apps
 target_link_libraries(EOTF MPSToolKit)

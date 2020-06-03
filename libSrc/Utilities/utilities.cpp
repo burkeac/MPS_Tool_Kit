@@ -8,14 +8,21 @@
 
 namespace MPS {
     ScopeTimer::ScopeTimer(){
-        start = std::chrono::steady_clock::now();
+        std::cout << "construced" << std::endl;
+        start = std::chrono::high_resolution_clock::now();
     }
+
     ScopeTimer::~ScopeTimer(){
-        end = std::chrono::steady_clock::now();
+        std::cout << "destructed" << std::endl;
+
+        end = std::chrono::high_resolution_clock::now();
+
+        duration = end-start;
+
         std::cout
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() 
+            << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() 
             << " ms \n" 
-            << std::chrono::duration_cast<std::chrono::seconds>(end - start).count()
+            << std::chrono::duration_cast<std::chrono::seconds>(duration).count()
             << " s"
             << std::endl;
     }
