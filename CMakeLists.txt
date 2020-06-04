@@ -17,7 +17,11 @@ add_library(MPSToolKit SHARED
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp
             ./libSrc/TransferFunctions/HDR_TranFunc.hpp
             ./libSrc/Color/ColorSpaces.cpp
-            ./libSrc/Color/ColorSpaces.hpp)
+            ./libSrc/Color/ColorSpaces.hpp
+            ./libSrc/Color/deltaE.cpp
+            ./libSrc/Color/deltaE.hpp
+            ./libSrc/Utilities/utilities.cpp
+            ./libSrc/Utilities/utilities.hpp)
 
 # Find OpenCV package and Link it to the MPSToolKit Libary
 target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})
@@ -29,7 +33,8 @@ add_executable(ToICtCp ./appSrc/ToICtCp.cpp)
 
 # Show Cmake where to find the header files
 include_directories(./libSrc/TransferFunctions
-                    ./libSrc/Color)
+                    ./libSrc/Color
+                    ./libSrc/Utilities)
 
 # Links the MPS toolkit library to Apps
 target_link_libraries(EOTF MPSToolKit)
