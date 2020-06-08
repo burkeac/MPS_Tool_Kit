@@ -21,7 +21,9 @@ add_library(MPSToolKit SHARED
             ./libSrc/Color/deltaE.cpp
             ./libSrc/Color/deltaE.hpp
             ./libSrc/Utilities/utilities.cpp
-            ./libSrc/Utilities/utilities.hpp)
+            ./libSrc/Utilities/utilities.hpp
+            ./libSrc/Utilities/programOptions.cpp
+)
 
 # Find OpenCV package and Link it to the MPSToolKit Libary
 target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})

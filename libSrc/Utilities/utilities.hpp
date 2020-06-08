@@ -4,9 +4,9 @@
 
 #pragma once
 #include <chrono>
+#include <map>
 
-namespace MPS{
-
+namespace MPS {
 
     /// Can be used to time a scope's execution time. Object should be constructed at the begining of the scope.
     /** 
@@ -28,5 +28,42 @@ namespace MPS{
         public:
             ScopeTimer();
             ~ScopeTimer();
-        };
+    };
+
+    class ProgramOptions {
+        private:
+            // std::map<std::string, std::string>
+            std::map<std::string, bool> _optionFlags;
+            std::map<std::string, std::string> _optionNames;
+            std::map<std::string, int> _numOptArgs;
+            // std::map<std::string, std::string> _helpText;
+            bool _flagDoesExist(std::string flag);
+            int _argc;
+            char** _argv;
+
+        public:
+        // Constructor
+            ProgramOptions(int argc, char* argv[]);
+            
+        // Methdos
+            /// Adds and option flag
+            /** 
+             * 
+             * */
+            void addOption(const std::string flag, 
+                           const std::string name,  
+                           const int numArgs = 0);
+
+            /// Returns the state of the object (true or false)
+            /** 
+             * If the flag does not exist, the method returns false 
+             * and throws a std::invalid_argument exception. This should 
+             * be caught and handled by the apps implementation.
+             * */
+            bool optionIsEnabled(const std::string flagOrName);
+
+            void addArgument(const std::string argumentName);
+
+            void parseInput();
+    };
 }
