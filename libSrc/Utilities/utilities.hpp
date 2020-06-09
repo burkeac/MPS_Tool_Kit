@@ -5,6 +5,8 @@
 #pragma once
 #include <chrono>
 #include <map>
+#include <vector>
+#include <string>
 
 namespace MPS {
 
@@ -32,27 +34,37 @@ namespace MPS {
 
     class ProgramOptions {
         private:
-            // std::map<std::string, std::string>
             std::map<std::string, bool> _optionFlags;
             std::map<std::string, std::string> _optionNames;
             std::map<std::string, int> _numOptArgs;
-            // std::map<std::string, std::string> _helpText;
+            std::map<std::string, std::string> _optionHelpText;
+            std::map<std::string, std::string> _optionArguments;
             bool _flagDoesExist(std::string flag);
+            bool _nameDoesExist(std::string name);
+            bool _helpTextDoesExist(std::string flag);
             int _argc;
             char** _argv;
 
         public:
         // Constructor
             ProgramOptions(int argc, char* argv[]);
-            
+
+        // Public Members
+            std::vector<std::string> arguments;
+            std::vector<std::string> paramNames = {"<arguments>c"};
+            std::string overRideProgramName = "";
+
         // Methdos
+            void addArgument(const std::string argumentName);
+
             /// Adds and option flag
             /** 
              * 
              * */
             void addOption(const std::string flag, 
                            const std::string name,  
-                           const int numArgs = 0);
+                           const int numArgs = 0, // make -1 assign the rest of the params to this option
+                           const bool flaggable = true);
 
             /// Returns the state of the object (true or false)
             /** 
@@ -62,8 +74,15 @@ namespace MPS {
              * */
             bool optionIsEnabled(const std::string flagOrName);
 
-            void addArgument(const std::string argumentName);
+            void addOptionHelpText(std::string flag, std::string helpText);
 
             void parseInput();
+
+            void showHelp();
+
     };
 }
+
+// to do 
+//      make option names optional
+//      allow option arguments (to follow flags)
