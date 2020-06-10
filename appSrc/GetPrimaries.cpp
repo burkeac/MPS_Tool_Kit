@@ -14,12 +14,12 @@ using namespace std;
 int main(int argc, char* argv[]){
 
     MPS::ProgramOptions options(argc, argv);
-    options.addOption("j", "letterj");
-    options.addOption("k", "letterk");
+    options.addOption_SF("j");
+    options.addOption_LF("letterk");
     options.addOption("l", "letterl");
     options.addOption("h", "help");
 
-    options.addOptionHelpText("letterj", "this is some help text");
+    options.addOptionHelpText("j", "this is some help text");
     options.numOptionParams("j", 2);
 
     try{
@@ -28,13 +28,13 @@ int main(int argc, char* argv[]){
         std::cout << "an error occured: "<< err.what() << std::endl;
     }
     std::cout << "-j " << options.optionIsEnabled("j") << std::endl;
-    std::cout << "-k " << options.optionIsEnabled("k") << std::endl;
+    std::cout << "-k " << options.optionIsEnabled("letterk") << std::endl;
     std::cout << "-l " << options.optionIsEnabled("l") << std::endl;
     
     if(options.optionIsEnabled("h"))
         options.showHelp();
 
-    for(auto arg : options.getOptionParams("j")){
+    for(auto arg : options.getOptionArgs("j")){
         std::cout << arg << std::endl;
     }
 
