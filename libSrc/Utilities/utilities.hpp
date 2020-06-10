@@ -35,71 +35,122 @@ namespace MPS {
     class ProgramOptions {
         private:
 
-            //sub object used to contain the options
-            struct OptionObj {
-                std::string _shortFlag, _longFlag, _helpText;
-                int numParams;
-                std::vector<std::string> optionArgs;
-                bool selected;
+        //sub object used to contain the options
+        struct OptionObj {
+            std::string _shortFlag, _longFlag, _helpText;
+            int numParams;
+            std::vector<std::string> optionArgs;
+            bool selected;
 
-                OptionObj(const std::string shortFlag, 
-                          const std::string longFlag)
-                          : _helpText(""), numParams(0), selected(false){
-                    _shortFlag = shortFlag;
-                    _longFlag = longFlag;
-                }
-            };
+            OptionObj(const std::string shortFlag, 
+                        const std::string longFlag)
+                        : _helpText(""), 
+                        numParams(0), 
+                        selected(false),
+                        _shortFlag(shortFlag),
+                        _longFlag(longFlag)
+            {}
 
-            // private members
-            std::vector<OptionObj> _options;
-            int _argc;
-            char** _argv;
-            
-            // methods
-            OptionObj* _findOption(const std::string& flag);
-            void _enableOption(const std::string& flag);
+            OptionObj(const std::string flag, const bool isShort)
+                : _helpText(""), 
+                numParams(0), 
+                selected(false), 
+                _shortFlag(""),
+                _longFlag("")
+            {
+                if(isShort)
+                    _shortFlag = flag;
+                else 
+                    _longFlag = flag;
+            }
+        };
+
+        std::vector<OptionObj> _options;
+        int _argc;
+        char** _argv;
+        
+        // methods
+        OptionObj* _findOption(const std::string& flag);
+        void _enableOption(const std::string& flag);
 
         public:
-        // Constructor
-            ProgramOptions(int argc, char* argv[]);
 
-        // Public Members
-            std::vector<std::string> arguments;
-            std::vector<std::string> paramNames = {"<arguments>"};
-            std::string overRideProgramName = "";
+        /// Constructor for program options.
+        /** 
+         * accepts int argc and char* argv[] from int main(int argc, char* argv[])
+         * */
+        ProgramOptions(int argc, char* argv[]);
+        
+        /// vector containing the arguments after parsing.
+        std::vector<std::string> arguments;
 
-        // Methdos
+        /// Paramater names to be shown in the help page's "usage"
+        std::vector<std::string> paramNames = {"<arguments>"};
 
-            /// Adds and option flag
-            /** 
-             * 
-             * */
-            void addOption(const std::string flag, 
-                           const std::string longflag);
+        /// The name of the program to be shown in the help pages "usage"
+        /**
+         *  A blank string signals the help method to use executables name, parsed using char* argv[] 
+         * */
+        std::string overRideProgramName = "";
 
-            /// Returns the state of the object (true or false)
-            /** 
-             * If the flag does not exist, the method returns false 
-             * and throws a std::invalid_argument exception. This should 
-             * be caught and handled by the apps implementation.
-             * */
-            bool optionIsEnabled(const std::string flagOrName);
+        /// creates options and generates associated flags
+        /** 
+         * Short flags should be called on the CLI with a preceeding "-" \n
+         * Long flgas should be called on the CLI with a preceeding "--" \n
+         * these prefixes are added automatically! \n\n
+         * 
+         * Example code: options.addOption("h", "help"); \n
+         * On Commandline: -h or --help
+         * */
+        void addOption(const std::string shortFlag, 
+                        const std::string longflag);
+        
+        void addOption_SF(const std::string shortFlag);
 
-            void addOptionHelpText(std::string flag, std::string helpText);
+        void addOption_LF(const std::string longflag);
 
-            void numOptionParams(std::string flag, int num);
-            
-            std::vector<std::string>& getOptionParams(std::string flag);
+        /// Returns the state of the object (true or false)
+        /** 
+         * If the flag does not exist, the method returns false 
+         * and throws a std::invalid_argument exception. This should 
+         * be caught and handled by the app implementation.
+         * */
+        bool optionIsEnabled(const std::string flagOrName);
 
-            void parseInput();
+        /// Adds help text for options.
+        /** 
+         * The flag paramater can be either the short or long flag. Without the prefix. \n
+         * For best formatting, help text should be short and avoid new lines.
+         * */
+        void addOptionHelpText(std::string flag, std::string helpText);
 
-            void showHelp();
+        /// Sets the number of optional arguments for an option flag.
+        /**
+         * Option flags can have associated paramaters. These are stored as part of the option object
+         * and differ from the "arguments" member in the ProgramOptions object.\n\n
+         * 
+         * Example: ./program X -o Y Z \n
+         * Assuming -o accepts 2 paramaters, Y and Z are stored within the -o options argument method.
+         * X on the otherhand, belongs to the globabl ProgramOptions member.
+         * \n option-arguments can be accessed using the getOptionParams(std::string flag) method.
+         * */
+        void numOptionParams(std::string flag, int num);
 
+        /// Acess params associated with an option flag
+        /** 
+         * returns a vector reference containg the associated arguments 
+         * with that flag similar to the global argument flag.
+         * */
+        std::vector<std::string>& getOptionArgs(std::string flag);
 
+        /// Parses CLI argument stream.
+        /**
+         * This method should be called at the end of the decliration of all options.
+         * */
+        void parseInput();
+
+        /// Outputs help screen through stdout (std::cout).
+        /** outlines usage and options */
+        void showHelp();
     };
 }
-
-// to do 
-//      make option names optional
-//      allow option arguments (to follow flags)
-// / make -1 assign the rest of the params to this option

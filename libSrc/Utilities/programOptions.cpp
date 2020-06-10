@@ -1,6 +1,7 @@
 // programOptions.cpp
 // Adam C. Burke (adam.burke603@gmail.com)
 // June 5, 2020
+
 #include <stdexcept>
 #include "utilities.hpp"
 #include <iostream>
@@ -48,8 +49,16 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
     void ProgramOptions::addOption(const std::string shortFlag,
                                    const std::string longFlag){
         if(shortFlag.length() > 1) 
-            throw "Development warning: 'const std::string shortFlag' should not exceed 1 charecter";
+            std::cerr << "Development warning: 'const std::string shortFlag' should not exceed 1 charecter" << std::endl;
         _options.push_back( ProgramOptions::OptionObj(shortFlag, longFlag) );
+    }
+
+    void ProgramOptions::addOption_SF(const std::string shortFlag){
+        _options.push_back( ProgramOptions::OptionObj(shortFlag, true) );
+    } 
+    
+    void ProgramOptions::addOption_LF(const std::string longFlag){
+        _options.push_back( ProgramOptions::OptionObj(longFlag, false) );
     }
 
     // returns the state of the option (true or false)
@@ -68,7 +77,7 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
        _findOption(pole+flag)->numParams = num;
     }
 
-    std::vector<std::string>& ProgramOptions::getOptionParams(std::string flag){
+    std::vector<std::string>& ProgramOptions::getOptionArgs(std::string flag){
         std::string pole = (flag.length() > 1) ? "--" : "-";
         return(_findOption(pole+flag)->optionArgs);
     }
@@ -84,8 +93,6 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
                 auto crntOptn = _findOption(_argv[i]);
                 if(crntOptn->numParams != 0){
 
-                    std::cout <<" wtf" << std::endl;
-
                     for(int j=i+1; j< (i + crntOptn->numParams + 1); j++){
 
                         if(j == _argc){ // ensure not out of bounds
@@ -98,9 +105,7 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
                     i += crntOptn->numParams;
                 }
 
-            } else 
-                std::cout << 0 << std::endl;
-                arguments.push_back(_argv[i]);
+            } else arguments.push_back(_argv[i]);
         }
     }
 
@@ -117,9 +122,17 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
 
         std::cout << "\n options are:" << std::endl;
         for(auto option : _options){
-            std::cout << "     -" << option._shortFlag << ", " 
-                      << "--" << option._longFlag << "   " 
-                      << option._helpText << "\n";
+            if(option._shortFlag == ""){
+                std::cout << "         --" << option._longFlag << "   " 
+                        << option._helpText << "\n";
+            } else if(option._longFlag == ""){
+                std::cout << "     -" << option._shortFlag << "   " 
+                        << option._helpText << "\n";
+            }else{
+                std::cout << "     -" << option._shortFlag << ", " 
+                        << "--" << option._longFlag << "   " 
+                        << option._helpText << "\n";
+            }
         }
         std::cout << std::endl;
     }
