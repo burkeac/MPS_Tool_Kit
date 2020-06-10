@@ -14,22 +14,30 @@ using namespace std;
 int main(int argc, char* argv[]){
 
     MPS::ProgramOptions options(argc, argv);
-    options.addOption("j", "letterj", 0, false);
-    options.addOption("k", "letterk", 0);
-    options.addOption("l", "letterl", 0);
+    options.addOption("j", "letterj");
+    options.addOption("k", "letterk");
+    options.addOption("l", "letterl");
+    options.addOption("h", "help");
 
-    options.addOptionHelpText("j", "this is the letter j");
+    options.addOptionHelpText("letterj", "this is some help text");
+    options.numOptionParams("j", 2);
 
     try{
         options.parseInput();
-    }catch(...){
-        std::cout << "an error occured" << std::endl;
+    }catch(std::invalid_argument err){
+        std::cout << "an error occured: "<< err.what() << std::endl;
     }
-    std::cout << "-j " << options.optionIsEnabled("-j") << std::endl;
-    std::cout << "-k " << options.optionIsEnabled("-k") << std::endl;
-    std::cout << "-l " << options.optionIsEnabled("-l") << std::endl;
+    std::cout << "-j " << options.optionIsEnabled("j") << std::endl;
+    std::cout << "-k " << options.optionIsEnabled("k") << std::endl;
+    std::cout << "-l " << options.optionIsEnabled("l") << std::endl;
+    
+    if(options.optionIsEnabled("h"))
+        options.showHelp();
 
-    options.showHelp();
+    for(auto arg : options.getOptionParams("j")){
+        std::cout << arg << std::endl;
+    }
+
 
     // MPS::colorPrimaries Rec709_Primaries(MPS::Rec709);
     // MPS::phosphorMatrix PM(Rec709_Primaries);

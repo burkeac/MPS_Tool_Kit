@@ -34,16 +34,30 @@ namespace MPS {
 
     class ProgramOptions {
         private:
-            std::map<std::string, bool> _optionFlags;
-            std::map<std::string, std::string> _optionNames;
-            std::map<std::string, int> _numOptArgs;
-            std::map<std::string, std::string> _optionHelpText;
-            std::map<std::string, std::string> _optionArguments;
-            bool _flagDoesExist(std::string flag);
-            bool _nameDoesExist(std::string name);
-            bool _helpTextDoesExist(std::string flag);
+
+            //sub object used to contain the options
+            struct OptionObj {
+                std::string _shortFlag, _longFlag, _helpText;
+                int numParams;
+                std::vector<std::string> optionArgs;
+                bool selected;
+
+                OptionObj(const std::string shortFlag, 
+                          const std::string longFlag)
+                          : _helpText(""), numParams(0), selected(false){
+                    _shortFlag = shortFlag;
+                    _longFlag = longFlag;
+                }
+            };
+
+            // private members
+            std::vector<OptionObj> _options;
             int _argc;
             char** _argv;
+            
+            // methods
+            OptionObj* _findOption(const std::string& flag);
+            void _enableOption(const std::string& flag);
 
         public:
         // Constructor
@@ -51,20 +65,17 @@ namespace MPS {
 
         // Public Members
             std::vector<std::string> arguments;
-            std::vector<std::string> paramNames = {"<arguments>c"};
+            std::vector<std::string> paramNames = {"<arguments>"};
             std::string overRideProgramName = "";
 
         // Methdos
-            void addArgument(const std::string argumentName);
 
             /// Adds and option flag
             /** 
              * 
              * */
             void addOption(const std::string flag, 
-                           const std::string name,  
-                           const int numArgs = 0, // make -1 assign the rest of the params to this option
-                           const bool flaggable = true);
+                           const std::string longflag);
 
             /// Returns the state of the object (true or false)
             /** 
@@ -76,9 +87,14 @@ namespace MPS {
 
             void addOptionHelpText(std::string flag, std::string helpText);
 
+            void numOptionParams(std::string flag, int num);
+            
+            std::vector<std::string>& getOptionParams(std::string flag);
+
             void parseInput();
 
             void showHelp();
+
 
     };
 }
@@ -86,3 +102,4 @@ namespace MPS {
 // to do 
 //      make option names optional
 //      allow option arguments (to follow flags)
+// / make -1 assign the rest of the params to this option

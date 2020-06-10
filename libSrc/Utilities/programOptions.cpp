@@ -15,92 +15,92 @@ namespace MPS {
     }
     
 // Private Members
+ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) {
+        
+        if( flag.substr(0,2) == "--"){
 
-    // checks to see if flag exists in map, returns false if not in map.
-    bool ProgramOptions::_flagDoesExist(std::string flag){
-        std::map<std::string, bool>::iterator flagLocation = _optionFlags.find(flag);
-        if (flagLocation == _optionFlags.end() )
-            return(false);
-        return(true);
+            for(int i=0; i < _options.size(); i++){
+                if( flag.substr(2, flag.length()).compare(_options[i]._longFlag) == 0 ){
+                    return(&_options[i]);
+                } else if(i == (_options.size()-1)){
+                    throw std::invalid_argument( "flag: '" + flag + "' does not exist" );
+                    break;
+                }
+            }
+        } else {
+            for(int i=0; i < _options.size(); i++){
+                if(flag.substr(1, flag.length()).compare(_options[i]._shortFlag) == 0){
+                    return(&_options[i]);
+                }else if(i == _options.size()-1){
+                    throw std::invalid_argument( "flag: '" + flag + "' does not exist" );
+                    break;
+                }
+            }
+        }
+        return nullptr;
     }
 
-    bool ProgramOptions::_nameDoesExist(std::string name){
-        auto nameLocation = _optionNames.find(name);
-        if (nameLocation == _optionNames.end() )
-            return(false);
-        return(true);
-    }
-
-    bool ProgramOptions::_helpTextDoesExist(std::string flag){
-        auto textLocation = _optionHelpText.find(flag);
-        if (textLocation == _optionHelpText.end() )
-            return(false);
-        return(true);
+    void ProgramOptions::_enableOption(const std::string& flag){
+        _findOption(flag)->selected = true;
     }
 
 // Public Members
-
-    void ProgramOptions::addOption(const std::string flag, 
-                                   const std::string name, 
-                                   const int numArgs,
-                                   const bool flaggable){
-        _optionFlags.insert( std::pair<std::string, bool>( "-" + flag, false));
-        if(flaggable)
-            _optionNames.insert( std::pair<std::string, std::string>("--"+ name, "-" + flag));
-        else
-            _optionNames.insert( std::pair<std::string, std::string>(name, "-" + flag));
-        _numOptArgs.insert( std::pair<std::string, int>("-" + flag, numArgs));
+    void ProgramOptions::addOption(const std::string shortFlag,
+                                   const std::string longFlag){
+        if(shortFlag.length() > 1) 
+            throw "Development warning: 'const std::string shortFlag' should not exceed 1 charecter";
+        _options.push_back( ProgramOptions::OptionObj(shortFlag, longFlag) );
     }
 
     // returns the state of the option (true or false)
     bool ProgramOptions::optionIsEnabled(const std::string flag){
-
-        // if flag does not exist, error
-        if (_flagDoesExist(flag) == false){
-            throw std::invalid_argument( "flag: '" + flag + "' does not exist" );
-            return(false);
-        } 
-
-        // otherwise: return the value of the flag state.
-        return(_optionFlags[flag]);
+        std::string pole = (flag.length() > 1) ? "--" : "-";
+        return(_findOption(pole+flag)->selected);
     }
     
     void ProgramOptions::addOptionHelpText(std::string flag, std::string helpText){
-        if (_flagDoesExist("-" + flag) == false)
-            throw std::invalid_argument( "flag: '" + flag + "' does not exist. Help text not assigned" );
-        else {
-            _optionHelpText.insert(std::pair<std::string, std::string>("-" + flag, helpText));
-        }
+       std::string pole = (flag.length() > 1) ? "--" : "-";
+       _findOption(pole+flag)->_helpText = helpText;
+    }
+
+    void ProgramOptions::numOptionParams(std::string flag, int num){
+        std::string pole = (flag.length() > 1) ? "--" : "-";
+       _findOption(pole+flag)->numParams = num;
+    }
+
+    std::vector<std::string>& ProgramOptions::getOptionParams(std::string flag){
+        std::string pole = (flag.length() > 1) ? "--" : "-";
+        return(_findOption(pole+flag)->optionArgs);
     }
 
     void ProgramOptions::parseInput(){
 
         for(int i=1; i<_argc; i++){
 
-            std::string toParse;
+            if( std::isdigit(_argv[i][1]) == false && 
+               (_argv[i][0] == '-' || std::string(_argv[i]).substr(0,1) == "--") ){
+                    _enableOption(_argv[i]); 
+                
+                auto crntOptn = _findOption(_argv[i]);
+                if(crntOptn->numParams != 0){
 
-            // Note: string comparison can be used here because: map<string, string> 
-            // vs map<string, bool>, where the _flagDoesExist method has to be 
-            // used because it returns a bool.
-            if(_nameDoesExist(_argv[i]) && _argv[i][0] == '-' && _argv[i][1] == '-')
-                toParse = _optionNames[_argv[i]];
-            else toParse = _argv[i];
+                    std::cout <<" wtf" << std::endl;
 
-            if(_flagDoesExist(toParse)){
-                _optionFlags[toParse] = true;
-            } else {
-                // ensure it is not a negative number eg: -3. Then error.
-                // otherwise the value is a param
-                if( toParse[0] == '-' && std::isdigit(toParse[1]) == false){
-                    throw std::invalid_argument
-                        ( "flag: '" + toParse + "' does not exist" );
-                } else {
+                    for(int j=i+1; j< (i + crntOptn->numParams + 1); j++){
 
-                    /* param handling */
-                    arguments.push_back(toParse);
-                    
+                        if(j == _argc){ // ensure not out of bounds
+                            throw std::invalid_argument("not enough params");
+                            break;
+                        }
+
+                        crntOptn->optionArgs.push_back(_argv[j]);
+                    }
+                    i += crntOptn->numParams;
                 }
-            }
+
+            } else 
+                std::cout << 0 << std::endl;
+                arguments.push_back(_argv[i]);
         }
     }
 
@@ -113,22 +113,14 @@ namespace MPS {
 
         for(auto parm : paramNames) 
             std::cout << parm << " ";
-            std::cout << " [options]" << std::endl;
+            std::cout << " [options] \n";
 
         std::cout << "\n options are:" << std::endl;
-        auto flagIt = _optionFlags.begin();
-        auto nameIt = _optionNames.begin();
-        while(flagIt != _optionFlags.end()){
-            std::string helpText = "";
-            if (_helpTextDoesExist(flagIt->first))
-                helpText = _optionHelpText[flagIt->first];
-
-            std::cout << "   " << flagIt->first << ", " << nameIt->first 
-            <<  "   " << helpText << std::endl;
-            flagIt++;
-            nameIt++;
-        } 
+        for(auto option : _options){
+            std::cout << "     -" << option._shortFlag << ", " 
+                      << "--" << option._longFlag << "   " 
+                      << option._helpText << "\n";
+        }
         std::cout << std::endl;
     }
-
 }
