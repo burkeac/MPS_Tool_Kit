@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['linear_5f2_5fhlg_20',['Linear_2_HLG',['../namespace_m_p_s.html#add470378c16191002af709da6503753e',1,'MPS']]],
-  ['linear_5f2_5fpq_21',['Linear_2_PQ',['../namespace_m_p_s.html#aec58f504813b98ddcd1c9aca50ef9d7c',1,'MPS']]]
+  ['hdr_5ftranfunc_2ecpp_29',['HDR_TranFunc.cpp',['../_h_d_r___tran_func_8cpp.html',1,'']]],
+  ['hdr_5ftranfunc_2ehpp_30',['HDR_TranFunc.hpp',['../_h_d_r___tran_func_8hpp.html',1,'']]],
+  ['hlg_5f2_5flinear_31',['HLG_2_Linear',['../namespace_m_p_s.html#a3832b864667d0561004e205a07f6dfcc',1,'MPS']]]
 ];

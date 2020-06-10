@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['linear_5f2_5fhlg_75',['Linear_2_HLG',['../namespace_m_p_s.html#add470378c16191002af709da6503753e',1,'MPS']]],
-  ['linear_5f2_5fpq_76',['Linear_2_PQ',['../namespace_m_p_s.html#aec58f504813b98ddcd1c9aca50ef9d7c',1,'MPS']]]
+  ['hlg_5f2_5flinear_117',['HLG_2_Linear',['../namespace_m_p_s.html#a3832b864667d0561004e205a07f6dfcc',1,'MPS']]]
 ];
