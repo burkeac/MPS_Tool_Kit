@@ -5,8 +5,14 @@
 #include <iostream>
 #include "ColorSpaces.hpp"
 #include "HDR_TranFunc.hpp"
-#include "../Eigen/Core"
-#include "../Eigen/Eigen"
+
+#ifndef _WIN32
+    #include "../Eigen/Core"
+    #include "../Eigen/Eigen"
+#else
+    #include "..\Eigen\Core"
+    #include "..\Eigen\Eigen"
+#endif
 
 using namespace std;
 

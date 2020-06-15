@@ -6,8 +6,13 @@
 
 #include <vector>
 //#include <opencv2/core.hpp> <-- put into function
-#include "../Eigen/Core"
-#include "../mpsVersion.hpp"
+#ifndef _WIN32
+    #include "../Eigen/Core"
+    #include "../mpsVersion.hpp"
+#else
+    #include "..\Eigen\Core"
+    #include "..\mpsVersion.hpp"
+#endif
 
 namespace MPS {
 
