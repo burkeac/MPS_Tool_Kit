@@ -60,6 +60,8 @@ namespace MPS{
          * */
         double cie94(bool graphicArts = true); //note: kc and kh are = 1
 
+        double cie2000(); 
+
     };
 
 }
