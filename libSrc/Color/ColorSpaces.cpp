@@ -3,6 +3,7 @@
 // July 28, 2019
 
 #include <iostream>
+#include <cmath>
 #include "ColorSpaces.hpp"
 #include "HDR_TranFunc.hpp"
 
@@ -214,5 +215,89 @@ namespace MPS{
 
         return result;
         
+    }
+
+// XYZ to CIE LAB
+
+    double f_of_t(double t){
+        const double delta = 6.0/29.0;
+        if( t > (delta) )
+            return(std::cbrt(t));
+        else
+            return( t/(3.0 * (delta * delta) ) + (4/29) );
+    }
+
+    std::vector<double> XYZ_to_cieLAB(const float& X, 
+                                      const float& Y, 
+                                      const float& Z, 
+                                      const WhitePoint& whitePt){
+        
+        double Xn, Yn, Zn;
+        
+        switch (whitePt){
+            case D65:
+                Xn = 95.0489;
+                Yn = 100.0;
+                Zn = 108.884;
+                break;
+
+            case D50:
+                Xn = 96.4212;
+                Yn = 100.0;
+                Zn = 82.5188;
+                break;
+        
+            default:
+                throw "Not a supported white point!";
+                break;
+        }
+
+        std::vector<double> LAB;
+        LAB.push_back(116.0 * f_of_t(Y/Yn) - 16.0);
+        LAB.push_back(500.0 * (f_of_t(X/Xn) - f_of_t(Y/Yn) ) );
+        LAB.push_back(200.0 * (f_of_t(Y/Yn) - f_of_t(Z/Zn) ));
+
+        return(LAB);
+    }
+
+    double inverse_f_of_t(double t){
+        const double delta = 6.0/29.0;
+        if(t > delta)
+            return(std::pow(t, 3));
+        else 
+            return(3.0 * std::pow(delta, 2) * ( t - (4.0/29.0) ) );
+    }
+
+    std::vector<double> cieLAB_to_XYZ(const float& L, 
+                                      const float& A, 
+                                      const float& B, 
+                                      const WhitePoint& whitePt){
+
+        double Xn, Yn, Zn;
+
+        switch (whitePt){
+            case D65:
+                Xn = 95.0489;
+                Yn = 100.0;
+                Zn = 108.884;
+                break;
+
+            case D50:
+                Xn = 96.4212;
+                Yn = 100.0;
+                Zn = 82.5188;
+                break;
+        
+            default:
+                throw "Not a supported white point!";
+                break;
+        }
+
+        std::vector<double> XYZ;
+        XYZ.push_back(Xn * inverse_f_of_t( (L + 16)/116.0 + A/500.0 ));
+        XYZ.push_back(Yn * inverse_f_of_t( (L + 16.0)/116 ));
+        XYZ.push_back(Zn * inverse_f_of_t( (L + 16.0)/116 - B/200.0 ));
+
+        return(XYZ);
     }
 }

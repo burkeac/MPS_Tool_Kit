@@ -8,10 +8,8 @@
 //#include <opencv2/core.hpp> <-- put into function
 #ifndef _WIN32
     #include "../Eigen/Core"
-    #include "../mpsVersion.hpp"
 #else
     #include "..\Eigen\Core"
-    #include "..\mpsVersion.hpp"
 #endif
 
 namespace MPS {
@@ -22,6 +20,8 @@ namespace MPS {
     /// Enums to be used in calling the corresponding primary's x,y or z value.
     enum ChromaPoint{xRed, yRed, zRed, xGreen, yGreen, zGreen, xBlue, yBlue, zBlue, xWhite, yWhite, zWhite};
     
+    enum WhitePoint{D65, D50};
+
     /// Defines the primaries of a pre-defined or custom colorspace i.e. Rec709 or Rec2020
     /**
      * Provides easy access and storage to predefined and custom primary sets
@@ -119,4 +119,28 @@ namespace MPS {
      * */
     std::vector<float> Rec2020_to_ICtCp(float R, float G, float B, 
                                         bool PQ = true, bool scaleToJNDs = false);
+
+
+
+    // Add docs
+    /// Converts CIE XYZ values to CIELAB.
+    /** 
+     * XYZ values should be normalized so that Y = 100.\n
+     * WhitePoint options include D65 and D50 
+     * */
+    std::vector<double> XYZ_to_cieLAB(const float& X, 
+                                      const float& Y, 
+                                      const float& Z, 
+                                      const WhitePoint& whitePt = D65);
+
+    /// Converts CIE XYZ values to CIELAB.
+    /** 
+     * LAB values are returned normalized so that Y = 100. \n 
+     * WhitePoint options include D65 and D50 
+     * */
+    std::vector<double> cieLAB_to_XYZ(const float& L, 
+                                      const float& A, 
+                                      const float& B, 
+                                      const WhitePoint& whitePt = D65);
+        
 }
