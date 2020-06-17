@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include "deltaE.hpp"
+#include <vector>
 
 // if M_PI is not defined on system
 #ifndef M_PI
@@ -14,10 +15,10 @@
 // constructors
 namespace MPS {
     // CIEDeltaE Class -- Constructors
-    CIEdeltaE::CIEdeltaE(){
-        _L1 = 0.; _a1 = 0.; _b1 = 0.;
-        _L2 = 0.; _a2 = 0.; _b2 = 0.;
-    }
+    CIEdeltaE::CIEdeltaE()
+          : _L1(0), _a1(0), _b1(0),
+            _L2(0), _a2(0), _b2(0)
+        {}
 
     CIEdeltaE::CIEdeltaE(double L1, double a1, double b1, 
                          double L2, double a2, double b2)
@@ -88,11 +89,12 @@ namespace MPS {
         /*
         This memebrs implementation has been addapted from the origional 
         program by Greg Fiumara (C) 2015 under the MIT license.
+        Origonal Repository: https://github.com/gfiumara/CIEDE2000
         
         -Lincense-
         The MIT License (MIT)
 
-        Copyright (c) 2015 Greg Fiumara
+        Copyright (c) 2015 Greg Fiumara 
 
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -239,4 +241,17 @@ namespace MPS {
         
         return (deltaE);
     }
+
+    // DeltaE from XYZ constructor
+    CIEdeltaE_frmXYZ::CIEdeltaE_frmXYZ(const double& X1, const double& Y1, const double& Z1,
+                                       const double& X2, const double& Y2, const double& Z2, 
+                                       const WhitePoint& wtpt){
+ 
+        std::vector<double> LAB1 = XYZ_to_cieLAB(X1, Y1, Z1, wtpt);
+        std::vector<double> LAB2 = XYZ_to_cieLAB(X2, Y2, Z2, wtpt);
+
+        _L1 = LAB1[0]; _a1 = LAB1[1]; _b1 = LAB1[2];
+
+        _L2 = LAB2[0]; _a2 = LAB2[1]; _b2 = LAB2[2];
+    };
 }
