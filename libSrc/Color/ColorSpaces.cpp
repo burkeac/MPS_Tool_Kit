@@ -288,7 +288,7 @@ namespace MPS{
         }
 
         std::vector<double> XYZ;
-        XYZ.push_back( Xn * inverse_f_of_t( (L + 16)/116.0 + A/500.0 ));
+        XYZ.push_back(Xn * inverse_f_of_t( (L + 16)/116.0 + A/500.0 ));
         XYZ.push_back(Yn * inverse_f_of_t( (L + 16.0)/116 ));
         XYZ.push_back(Zn * inverse_f_of_t( (L + 16.0)/116 - B/200.0 ));
 
