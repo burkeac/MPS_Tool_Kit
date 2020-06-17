@@ -22,6 +22,8 @@ namespace MPS {
     /// Enums to be used in calling the corresponding primary's x,y or z value.
     enum ChromaPoint{xRed, yRed, zRed, xGreen, yGreen, zGreen, xBlue, yBlue, zBlue, xWhite, yWhite, zWhite};
     
+    enum WhitePoint{D65, D50};
+
     /// Defines the primaries of a pre-defined or custom colorspace i.e. Rec709 or Rec2020
     /**
      * Provides easy access and storage to predefined and custom primary sets
@@ -119,4 +121,12 @@ namespace MPS {
      * */
     std::vector<float> Rec2020_to_ICtCp(float R, float G, float B, 
                                         bool PQ = true, bool scaleToJNDs = false);
+
+
+
+    // Add docs
+    std::vector<double> XYZ_to_cieLAB(float X, float Y, float Z, WhitePoint whitePt = D65);
+
+    std::vector<double> cieLAB_to_XYZ(float L, float A, float B, WhitePoint whitePt = D65);
+        
 }
