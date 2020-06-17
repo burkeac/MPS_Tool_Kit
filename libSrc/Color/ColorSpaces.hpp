@@ -8,10 +8,8 @@
 //#include <opencv2/core.hpp> <-- put into function
 #ifndef _WIN32
     #include "../Eigen/Core"
-    #include "../mpsVersion.hpp"
 #else
     #include "..\Eigen\Core"
-    #include "..\mpsVersion.hpp"
 #endif
 
 namespace MPS {
@@ -125,8 +123,14 @@ namespace MPS {
 
 
     // Add docs
-    std::vector<double> XYZ_to_cieLAB(float X, float Y, float Z, WhitePoint whitePt = D65);
+    std::vector<double> XYZ_to_cieLAB(const float& X, 
+                                      const float& Y, 
+                                      const float& Z, 
+                                      const WhitePoint& whitePt = D65);
 
-    std::vector<double> cieLAB_to_XYZ(float L, float A, float B, WhitePoint whitePt = D65);
+    std::vector<double> cieLAB_to_XYZ(const float& L, 
+                                      const float& A, 
+                                      const float& B, 
+                                      const WhitePoint& whitePt = D65);
         
 }
