@@ -15,9 +15,10 @@
 // constructors
 namespace MPS {
     // CIEDeltaE Class -- Constructors
+
     CIEdeltaE::CIEdeltaE()
-          : _L1(0), _a1(0), _b1(0),
-            _L2(0), _a2(0), _b2(0)
+        :_L1(0), _a1(0), _b1(0),
+         _L2(0), _a2(0), _b2(0)
         {}
 
     CIEdeltaE::CIEdeltaE(double L1, double a1, double b1, 
@@ -27,13 +28,6 @@ namespace MPS {
                          {}
 
     // CIEDeltaE Class -- Methods
-    void CIEdeltaE::setLab1(double L1, double a1, double b1) {
-        _L1 = L1; _a1 = a1; _b1 = b1; 
-    }
-
-    void CIEdeltaE::setLab2(double L2, double a2, double b2) {
-        _L2 = L2; _a2 = a2; _b2 = b2;
-    }
 
     double CIEdeltaE::cie76(){
         double deltaE_ab = std::sqrt( 
@@ -250,6 +244,7 @@ namespace MPS {
         std::vector<double> LAB1 = XYZ_to_cieLAB(X1, Y1, Z1, wtpt);
         std::vector<double> LAB2 = XYZ_to_cieLAB(X2, Y2, Z2, wtpt);
 
+        CIEdeltaE(0,0,0,0,0,0);
         _L1 = LAB1[0]; _a1 = LAB1[1]; _b1 = LAB1[2];
 
         _L2 = LAB2[0]; _a2 = LAB2[1]; _b2 = LAB2[2];
