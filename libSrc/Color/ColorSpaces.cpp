@@ -227,7 +227,10 @@ namespace MPS{
             return( t/(3.0 * (delta * delta) ) + (4/29) );
     }
 
-    std::vector<double> XYZ_to_cieLAB(float X, float Y, float Z, WhitePoint whitePt){
+    std::vector<double> XYZ_to_cieLAB(const float& X, 
+                                      const float& Y, 
+                                      const float& Z, 
+                                      const WhitePoint& whitePt){
         
         double Xn, Yn, Zn;
         
@@ -265,7 +268,10 @@ namespace MPS{
             return(3.0 * std::pow(delta, 2) * ( t - (4.0/29.0) ) );
     }
 
-    std::vector<double> cieLAB_to_XYZ(float L, float A, float B, WhitePoint whitePt){
+    std::vector<double> cieLAB_to_XYZ(const float& L, 
+                                      const float& A, 
+                                      const float& B, 
+                                      const WhitePoint& whitePt){
 
         double Xn, Yn, Zn;
 
