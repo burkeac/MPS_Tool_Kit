@@ -123,11 +123,21 @@ namespace MPS {
 
 
     // Add docs
+    /// Converts CIE XYZ values to CIELAB.
+    /** 
+     * XYZ values should be normalized so that Y = 100.\n
+     * WhitePoint options include D65 and D50 
+     * */
     std::vector<double> XYZ_to_cieLAB(const float& X, 
                                       const float& Y, 
                                       const float& Z, 
                                       const WhitePoint& whitePt = D65);
 
+    /// Converts CIE XYZ values to CIELAB.
+    /** 
+     * LAB values are returned normalized so that Y = 100. \n 
+     * WhitePoint options include D65 and D50 
+     * */
     std::vector<double> cieLAB_to_XYZ(const float& L, 
                                       const float& A, 
                                       const float& B, 
