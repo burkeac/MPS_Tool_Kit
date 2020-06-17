@@ -244,7 +244,6 @@ namespace MPS {
         std::vector<double> LAB1 = XYZ_to_cieLAB(X1, Y1, Z1, wtpt);
         std::vector<double> LAB2 = XYZ_to_cieLAB(X2, Y2, Z2, wtpt);
 
-        CIEdeltaE(0,0,0,0,0,0);
         _L1 = LAB1[0]; _a1 = LAB1[1]; _b1 = LAB1[2];
 
         _L2 = LAB2[0]; _a2 = LAB2[1]; _b2 = LAB2[2];
