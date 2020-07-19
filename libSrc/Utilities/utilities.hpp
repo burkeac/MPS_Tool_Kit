@@ -3,6 +3,7 @@
 // June 2, 2020
 
 #pragma once
+
 #include <chrono>
 #include <map>
 #include <vector>
@@ -152,5 +153,17 @@ namespace MPS {
         /// Outputs help screen through stdout (std::cout).
         /** outlines usage and options */
         void showHelp();
+    };
+
+    class CSVreader{
+        public: 
+        std::string filePath;
+
+        CSVreader();
+        CSVreader(const std::string& filePath);
+
+        /// Reads data to internal std::vector.
+        std::vector<std::vector<std::string>>& readFile();
+        
     };
 }
