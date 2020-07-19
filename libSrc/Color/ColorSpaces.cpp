@@ -19,24 +19,24 @@ using namespace std;
 
 // Primaries in format: {Xr, Yr, Xg, Yg, Xb, Yb}
 // White Point in format: {Xw, Yw}
-const vector<float> Rec709_Primaries  =  {0.64, 0.33, 0.30, 0.60, 0.15, 0.06};
-const vector<float> Rec709_WhitePoint =  {0.3127, 0.3290};
-const vector<float> Rec2020_Primaries =  {0.708, 0.292, 0.17, 0.797, 0.131, 0.046};
-const vector<float> Rec2020_WhitePoint = {0.3127, 0.3290};
-const vector<float> P3D65_Primaries    = {0.680, 0.320, 0.265, 0.690, 0.150, 0.060};
-const vector<float> P3D65_WhitePoint   = {0.3127, 0.3290};
-const vector<float> P3DCI_Primaries    = {0.680, 0.320, 0.265, 0.690, 0.150, 0.060};
-const vector<float> P3DCI_WhitePoint   = {0.314, 0.351};
-const vector<float> ACES_P0_Primaries  = {0.7347, 0.2653, 0.0, 1.0, 0.0001, -0.0770};
-const vector<float> ACES_P1_Primaries  = {0.713, 0.293, 0.165, 0.830, 0.128, 0.044};
-const vector<float> ACES_WhitePoint    = {0.32168, 0.33767};
+const array<float, 6> Rec709_Primaries  =  {0.64f, 0.33f, 0.30f, 0.60f, 0.15f, 0.06f};
+const array<float, 2> Rec709_WhitePoint =  {0.3127f, 0.3290f};
+const array<float, 6> Rec2020_Primaries =  {0.708f, 0.292f, 0.17f, 0.797f, 0.131f, 0.046f};
+const array<float, 2> Rec2020_WhitePoint = {0.3127f, 0.3290f};
+const array<float, 6> P3D65_Primaries    = {0.680f, 0.320f, 0.265f, 0.690f, 0.150f, 0.060f};
+const array<float, 2> P3D65_WhitePoint   = {0.3127f, 0.3290f};
+const array<float, 6> P3DCI_Primaries    = {0.680f, 0.320f, 0.265f, 0.690f, 0.150f, 0.060f};
+const array<float, 2> P3DCI_WhitePoint   = {0.314f, 0.351f};
+const array<float, 6> ACES_P0_Primaries  = {0.7347f, 0.2653f, 0.0f, 1.0f, 0.0001f, -0.0770f};
+const array<float, 6> ACES_P1_Primaries  = {0.713f, 0.293f, 0.165f, 0.830f, 0.128f, 0.044f};
+const array<float, 2> ACES_WhitePoint    = {0.32168f, 0.33767f};
 
 namespace MPS{
 // Implementations for the colorPrimaries class
     // Constructors
     MPS::colorPrimaries::colorPrimaries(){
-        Primaries = vector<float> {0,0,0,0,0,0}; 
-        WhitePoint = vector<float> {0,0};
+        Primaries = array<float, 6> {0,0,0,0,0,0}; 
+        WhitePoint = array<float, 2> {0,0};
     }
     MPS::colorPrimaries::colorPrimaries(MPS::ColorSpaces colorSpace){
         MPS::colorPrimaries::selectPrimary(colorSpace);
@@ -69,8 +69,8 @@ namespace MPS{
                 Primaries = ACES_P0_Primaries;
                 WhitePoint = ACES_WhitePoint;
             default: 
-                Primaries = vector<float> {0,0,0,0,0,0}; 
-                WhitePoint = vector<float> {0,0};
+                Primaries = array<float, 6> {0,0,0,0,0,0}; 
+                WhitePoint = array<float, 2> {0,0};
                 break;
         }
     }
@@ -184,8 +184,8 @@ namespace MPS{
     };
 
 // Linear RGB Rec 2020 CVs
-    // Returns std::vector of floats in I Ct Cp format.
-    std::vector<float> Rec2020_to_ICtCp(float R, float G, float B, bool PQ, bool scaleToJNDs){
+    // Returns std::array<float, 3> AKA MPS::tripletF of floats in I Ct Cp format.
+    MPS::tripletF Rec2020_to_ICtCp(float R, float G, float B, bool PQ, bool scaleToJNDs){
      
         //Convert RGB to LMS
         Eigen::Vector3f RGB; RGB << R, G, B;
@@ -209,7 +209,7 @@ namespace MPS{
         
         Eigen::Vector3f ICtCp = (1./4096.) * LMStoICtCp * LMS;
 
-        vector<float> result;
+        MPS::tripletF result;
         if (scaleToJNDs) result = { ICtCp(0) * (float)720.0, ICtCp(1) * (float)360.0, ICtCp(2) * (float)720.0};
         else result = { ICtCp(0), ICtCp(1), ICtCp(2)};
 
@@ -227,7 +227,7 @@ namespace MPS{
             return( t/(3.0 * (delta * delta) ) + (4/29) );
     }
 
-    std::vector<double> XYZ_to_cieLAB(const float& X, 
+    MPS::tripletD XYZ_to_cieLAB(const float& X, 
                                       const float& Y, 
                                       const float& Z, 
                                       const WhitePoint& whitePt){
@@ -252,10 +252,10 @@ namespace MPS{
                 break;
         }
 
-        std::vector<double> LAB;
-        LAB.push_back(116.0 * f_of_t(Y/Yn) - 16.0);
-        LAB.push_back(500.0 * (f_of_t(X/Xn) - f_of_t(Y/Yn) ) );
-        LAB.push_back(200.0 * (f_of_t(Y/Yn) - f_of_t(Z/Zn) ));
+        MPS::tripletD LAB;
+        LAB[0] = (116.0 * f_of_t(Y/Yn) - 16.0);
+        LAB[1] = (500.0 * (f_of_t(X/Xn) - f_of_t(Y/Yn) ) );
+        LAB[2] = (200.0 * (f_of_t(Y/Yn) - f_of_t(Z/Zn) ));
 
         return(LAB);
     }
@@ -268,7 +268,7 @@ namespace MPS{
             return(3.0 * std::pow(delta, 2) * ( t - (4.0/29.0) ) );
     }
 
-    std::vector<double> cieLAB_to_XYZ(const float& L, 
+    MPS::tripletD cieLAB_to_XYZ(const float& L, 
                                       const float& A, 
                                       const float& B, 
                                       const WhitePoint& whitePt){
@@ -293,10 +293,10 @@ namespace MPS{
                 break;
         }
 
-        std::vector<double> XYZ;
-        XYZ.push_back(Xn * inverse_f_of_t( (L + 16)/116.0 + A/500.0 ));
-        XYZ.push_back(Yn * inverse_f_of_t( (L + 16.0)/116 ));
-        XYZ.push_back(Zn * inverse_f_of_t( (L + 16.0)/116 - B/200.0 ));
+        MPS::tripletD XYZ;
+        XYZ[0] = (Xn * inverse_f_of_t( (L + 16)/116.0 + A/500.0 ));
+        XYZ[1] = (Yn * inverse_f_of_t( (L + 16.0)/116 ));
+        XYZ[2] = (Zn * inverse_f_of_t( (L + 16.0)/116 - B/200.0 ));
 
         return(XYZ);
     }
