@@ -5,7 +5,6 @@
 #include <cmath>
 #include <iostream>
 #include "deltaE.hpp"
-#include <vector>
 
 // if M_PI is not defined on system
 #ifndef M_PI
