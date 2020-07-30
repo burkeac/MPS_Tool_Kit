@@ -156,14 +156,41 @@ namespace MPS {
     };
 
     class CSVreader{
+        private:
+        std::vector<std::vector<std::string>> data;
+        
         public: 
+        CSVreader();
+        CSVreader(const std::string& filePath, bool strip = false);
+        
         std::string filePath;
 
-        CSVreader();
-        CSVreader(const std::string& filePath);
-
-        /// Reads data to internal std::vector.
-        std::vector<std::vector<std::string>>& readFile();
+        /// Reads data to internal data structure
+        /** 
+         * If file can not be read, the method throws a std::string exception.
+         * */
+        std::vector<std::vector<std::string>>& read(bool strip = true);
         
+        /// returns a reference to the data.
+        std::vector<std::vector<std::string>>& getRef();
+
+        // Access data by row and col
+        std::string& at(size_t row, size_t col);
+
+        /// Get a specified row of data.
+        std::vector<std::string>& getRow(size_t row);
+
+        /// Get a specified row of data
+        /** 
+         * Can access specific col element in a row by appending an additional index [n]. \n 
+         * such as: CSVreader[row][col]
+         * */ 
+        std::vector<std::string>& operator[](size_t row);
+
     };
+
+    /// Removes leading and trailing spaces from string 
+    std::string strip(const std::string& input);
+
+
 }

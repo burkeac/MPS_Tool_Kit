@@ -26,4 +26,14 @@ namespace MPS {
             << " s"
             << std::endl;
     }
+
+    std::string strip(const std::string& input){
+        size_t first = input.find_first_not_of(" \t");
+        size_t last = input.find_last_not_of(" \t");
+
+        return input.substr(first, last-first+1);
+    }
+
+    
+
 }
