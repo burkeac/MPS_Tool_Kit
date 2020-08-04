@@ -5,6 +5,8 @@
 #pragma once
 
 #include <vector>
+#include "macro_typedef.hpp"
+
 //#include <opencv2/core.hpp> <-- put into function
 #ifndef _WIN32
     #include "../Eigen/Core"
@@ -39,10 +41,10 @@ namespace MPS {
             colorPrimaries(ColorSpaces colorSpace);
 
         // Members 
-            std::vector<float> Primaries; ///< Stores the RGB primaires within the object as a std::vector
+            std::array<float, 6> Primaries; ///< Stores the RGB primaires within the object as a std::array<float, 6>
                                           /**< Primaries are store in Red x, Red y, Green x, Green y, Blue x, Blue y*/
 
-            std::vector<float> WhitePoint; ///< Stores the white point within the object as a std::vector
+            std::array<float, 2> WhitePoint; ///< Stores the white point within the object as a std::array<float, 2>
 
         // Methods
             /// Construct the object using a predefined colorspace
@@ -111,13 +113,13 @@ namespace MPS {
      * [In] Rec2020 B CV \n
      * [In] PQ = true, HLG = false \n
      * [In] Scale the values to JND \n 
-     * [Return] std::vector<float> in I, Ct, Cp format \n
+     * [Return] MPS::tripletF in I, Ct, Cp format \n
      * 
      *  Implementation based on Dolby White Paper "Perceptual Color Volume" and WHAT IS ICTCP?
      *  https://www.dolby.com/us/en/technologies/dolby-vision/measuring-perceptual-color-volume-v7.1.pdf
      *  https://www.dolby.com/us/en/technologies/dolby-vision/ictcp-white-paper.pdf
      * */
-    std::vector<float> Rec2020_to_ICtCp(float R, float G, float B, 
+    MPS::tripletF Rec2020_to_ICtCp(float R, float G, float B, 
                                         bool PQ = true, bool scaleToJNDs = false);
 
 
@@ -128,7 +130,7 @@ namespace MPS {
      * XYZ values should be normalized so that Y = 100.\n
      * WhitePoint options include D65 and D50 
      * */
-    std::vector<double> XYZ_to_cieLAB(const float& X, 
+    MPS::tripletD XYZ_to_cieLAB(const float& X, 
                                       const float& Y, 
                                       const float& Z, 
                                       const WhitePoint& whitePt = D65);
@@ -138,7 +140,7 @@ namespace MPS {
      * LAB values are returned normalized so that Y = 100. \n 
      * WhitePoint options include D65 and D50 
      * */
-    std::vector<double> cieLAB_to_XYZ(const float& L, 
+    MPS::tripletD cieLAB_to_XYZ(const float& L, 
                                       const float& A, 
                                       const float& B, 
                                       const WhitePoint& whitePt = D65);

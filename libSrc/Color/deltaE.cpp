@@ -5,7 +5,6 @@
 #include <cmath>
 #include <iostream>
 #include "deltaE.hpp"
-#include <vector>
 
 // if M_PI is not defined on system
 #ifndef M_PI
@@ -241,8 +240,8 @@ namespace MPS {
                                        const double& X2, const double& Y2, const double& Z2, 
                                        const WhitePoint& wtpt){
  
-        std::vector<double> LAB1 = XYZ_to_cieLAB(X1, Y1, Z1, wtpt);
-        std::vector<double> LAB2 = XYZ_to_cieLAB(X2, Y2, Z2, wtpt);
+        MPS::tripletD LAB1 = XYZ_to_cieLAB(X1, Y1, Z1, wtpt);
+        MPS::tripletD LAB2 = XYZ_to_cieLAB(X2, Y2, Z2, wtpt);
 
         _L1 = LAB1[0]; _a1 = LAB1[1]; _b1 = LAB1[2];
 
