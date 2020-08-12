@@ -8,11 +8,11 @@
 #include "HDR_TranFunc.hpp"
 
 #ifndef _WIN32
-    #include "../Eigen/Core"
-    #include "../Eigen/Eigen"
+    #include "../../ThirdParty/Eigen/Core"
+    #include "../../ThirdParty/Eigen/Eigen"
 #else
-    #include "..\Eigen\Core"
-    #include "..\Eigen\Eigen"
+    #include "..\..\ThirdParty\Eigen\Core"
+    #include "..\..\ThirdParty\Eigen\Eigen"
 #endif
 
 using namespace std;

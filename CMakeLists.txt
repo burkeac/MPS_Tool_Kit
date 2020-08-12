@@ -13,6 +13,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 find_package(opencv REQUIRED)
 
 # Create the library
+
+
 add_library(MPSToolKit SHARED
             ./libSrc/Core/macro_typedef.hpp
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp

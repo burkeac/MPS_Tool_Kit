@@ -9,9 +9,9 @@
 
 //#include <opencv2/core.hpp> <-- put into function
 #ifndef _WIN32
-    #include "../Eigen/Core"
+    #include "../../ThirdParty/Eigen/Core"
 #else
-    #include "..\Eigen\Core"
+    #include "..\..\ThirdParty\Eigen\Core"
 #endif
 
 namespace MPS {
