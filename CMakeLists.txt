@@ -12,19 +12,17 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 # Find OpenCV
 find_package(opencv REQUIRED)
 
+# Add Pybind11
+add_subdirectory(ThirdParty/pybind11)
+
 # Create the library
 
 
 add_library(MPSToolKit SHARED
-            ./libSrc/Core/macro_typedef.hpp
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp
-            ./libSrc/TransferFunctions/HDR_TranFunc.hpp
             ./libSrc/Color/ColorSpaces.cpp
-            ./libSrc/Color/ColorSpaces.hpp
             ./libSrc/Color/deltaE.cpp
-            ./libSrc/Color/deltaE.hpp
             ./libSrc/Utilities/utilities.cpp
-            ./libSrc/Utilities/utilities.hpp
             ./libSrc/Utilities/programOptions.cpp
             ./libSrc/Utilities/csvReader.cpp
 )
