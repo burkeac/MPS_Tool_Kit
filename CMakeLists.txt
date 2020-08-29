@@ -12,12 +12,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 # Find OpenCV
 find_package(opencv REQUIRED)
 
-# Add Pybind11
-add_subdirectory(ThirdParty/pybind11)
-
 # Create the library
-
-
 add_library(MPSToolKit SHARED
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp
             ./libSrc/Color/ColorSpaces.cpp
@@ -30,7 +25,13 @@ add_library(MPSToolKit SHARED
 # Find OpenCV package and Link it to the MPSToolKit Libary
 target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})
 
-# Compile the executables
+
+# Add Pybind11 and create MPS python module 
+add_subdirectory(ThirdParty/pybind11)
+pybind11_add_module(py_mpsToolKit  ./libSrc/PythonBindings/PythonBindings.cpp
+                                   ./libSrc/TransferFunctions/HDR_TranFunc.cpp)
+
+# Compile the apps executables
 add_executable(EOTF ./appSrc/Calculate_PQ_EOTF.cpp)
 add_executable(GetPrimaries ./appSrc/GetPrimaries.cpp)
 add_executable(ToICtCp ./appSrc/ToICtCp.cpp)
