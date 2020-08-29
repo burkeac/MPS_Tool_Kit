@@ -25,11 +25,10 @@ add_library(MPSToolKit SHARED
 # Find OpenCV package and Link it to the MPSToolKit Libary
 target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})
 
-
 # Add Pybind11 and create MPS python module 
 add_subdirectory(ThirdParty/pybind11)
-pybind11_add_module(py_mpsToolKit  ./libSrc/PythonBindings/PythonBindings.cpp
-                                   ./libSrc/TransferFunctions/HDR_TranFunc.cpp)
+pybind11_add_module(py_mpsToolKit  ./libSrc/PythonBindings/PythonBindings.cpp)
+target_link_libraries(py_mpsToolKit PUBLIC MPSToolKit)
 
 # Compile the apps executables
 add_executable(EOTF ./appSrc/Calculate_PQ_EOTF.cpp)
