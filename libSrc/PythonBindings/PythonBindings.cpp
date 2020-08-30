@@ -18,7 +18,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(py_mpsToolKit, m){
+PYBIND11_MODULE(py_mpsToolkit, m){
 
     // call the module functions
     TransferFunctions(m);
