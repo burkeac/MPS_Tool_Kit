@@ -4,10 +4,13 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <../TransferFunctions/HDR_TranFunc.hpp> 
-
-// if win32
+#ifndef _WIN32
+      #include <pybind11/pybind11.h>
+      #include <../TransferFunctions/HDR_TranFunc.hpp> 
+#else 
+      #include <pybind11\pybind11.h>
+      #include <..\TransferFunctions\HDR_TranFunc.hpp> 
+#endif
 
 namespace py = pybind11;
 
