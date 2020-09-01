@@ -105,7 +105,7 @@ namespace MPS {
         */
 
         CIEDE2000::LAB lab1 = {_L1, _a1, _b1};
-        CIEDE2000::LAB lab2 = {_L2, _a2, _a2};
+        CIEDE2000::LAB lab2 = {_L2, _a2, _b2};
         return CIEDE2000::CIEDE2000(lab1, lab2);
     }
 
