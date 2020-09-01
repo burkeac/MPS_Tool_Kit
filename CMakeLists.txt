@@ -17,6 +17,7 @@ add_library(MPSToolkit SHARED
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp
             ./libSrc/Color/ColorSpaces.cpp
             ./libSrc/Color/deltaE.cpp
+            ./ThirdParty/CIEDE2000/CIEDE2000.cpp
             ./libSrc/Utilities/utilities.cpp
             ./libSrc/Utilities/programOptions.cpp
             ./libSrc/Utilities/csvReader.cpp
