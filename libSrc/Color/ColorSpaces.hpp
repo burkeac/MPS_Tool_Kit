@@ -90,10 +90,10 @@ namespace MPS {
              * [Return] Forward PM as an Eigen::Matrix3f.
              */
             Eigen::Matrix3f generatePMs(MPS::colorPrimaries& primaries, 
-                                float actualLum = 100.0, 
-                                float aimLum = 100.0, 
-                                bool setMembers = true);
-            
+                                        float actualLum = 100.0, 
+                                        float aimLum = 100.0, 
+                                        bool setMembers = true);
+                    
             /// Returns the phosphore matrix stored in the private member as an Eigen::Matrix3f.
             Eigen::Matrix3f getPM();
 
@@ -120,7 +120,7 @@ namespace MPS {
      *  https://www.dolby.com/us/en/technologies/dolby-vision/ictcp-white-paper.pdf
      * */
     MPS::tripletF Rec2020_to_ICtCp(float R, float G, float B, 
-                                        bool PQ = true, bool scaleToJNDs = false);
+                                   bool PQ = true, bool scaleToJNDs = false);
 
 
 
@@ -131,9 +131,9 @@ namespace MPS {
      * WhitePoint options include D65 and D50 
      * */
     MPS::tripletD XYZ_to_cieLAB(const float& X, 
-                                      const float& Y, 
-                                      const float& Z, 
-                                      const WhitePoint& whitePt = D65);
+                                const float& Y, 
+                                const float& Z, 
+                                const WhitePoint& whitePt = D65);
 
     /// Converts CIE XYZ values to CIELAB.
     /** 
@@ -141,8 +141,8 @@ namespace MPS {
      * WhitePoint options include D65 and D50 
      * */
     MPS::tripletD cieLAB_to_XYZ(const float& L, 
-                                      const float& A, 
-                                      const float& B, 
-                                      const WhitePoint& whitePt = D65);
+                                const float& A, 
+                                const float& B, 
+                                const WhitePoint& whitePt = D65);
         
 }

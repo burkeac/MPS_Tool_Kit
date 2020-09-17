@@ -26,32 +26,43 @@ namespace MPS {
          _L2(0), _a2(0), _b2(0)
         {}
 
-    CIEdeltaE::CIEdeltaE(double L1, double a1, double b1, 
-                         double L2, double a2, double b2)
+    CIEdeltaE::CIEdeltaE(const double& L1, const double& a1, const double& b1, 
+                         const double& L2, const double& a2, const double& b2)
                          : _L1(L1), _a1(a1), _b1(b1),
                            _L2(L2), _a2(a2), _b2(b2)
                          {}
 
     // CIEDeltaE Class -- Methods
 
-    double CIEdeltaE::cie76(){
+    double CIEdeltaE::cie76() const{
+        // call static method using assigned params
+        return CIEdeltaE::cie76(_L1, _a1, _b1, _L2, _a2, _b2);
+    }
+
+    double CIEdeltaE::cie76(const double& L1, const double& a1, const double& b1, 
+                            const double& L2, const double& a2, const double& b2){
         double deltaE_ab = std::sqrt( 
-                              std::pow( (_L2 - _L1), 2.0) 
-                            + std::pow( (_a2 - _a1), 2.0) 
-                            + std::pow( (_b2 - _b1), 2.0) );
+                              std::pow( (L2 - L1), 2.0) 
+                            + std::pow( (a2 - a1), 2.0) 
+                            + std::pow( (b2 - b1), 2.0) );
         return(deltaE_ab);
     }
 
-    double CIEdeltaE::cie94(bool graphicArts){
+    double CIEdeltaE::cie94(const bool& graphicArts) const{
+        return CIEdeltaE::cie94(_L1, _a1, _b1, _L2, _a2, _b2, graphicArts);
+    }
 
+    double CIEdeltaE::cie94(const double& L1, const double& a1, const double& b1,
+                            const double& L2, const double& a2, const double& b2,
+                            const bool& graphicArts){
 
-        double deltaL = _L1 - _L2;
-        double C1 = sqrt( std::pow(_a1, 2.0) + std::pow(_b1, 2.0) );
-        double C2 = sqrt( std::pow(_a2, 2.0) + std::pow(_b2, 2.0) );
+        double deltaL = L1 - L2;
+        double C1 = sqrt( std::pow(a1, 2.0) + std::pow(b1, 2.0) );
+        double C2 = sqrt( std::pow(a2, 2.0) + std::pow(b2, 2.0) );
         double DeltaC_ab = C1 - C2;
         
-        double Delta_a = _a1 - _a2;
-        double Delta_b = _b1 - _b2;
+        double Delta_a = a1 - a2;
+        double Delta_b = b1 - b2;
 
         double DeltaH_ab = sqrt( std::pow(Delta_a, 2.0) +
                                  std::pow(Delta_b, 2.0) -
@@ -73,7 +84,8 @@ namespace MPS {
         return(deltaE_94);
     }
 
-    double CIEdeltaE::cie2000(){
+
+    double CIEdeltaE::cie2000() const{
 
         /*
         This memebr's implementation utilizes wraps thesource code from the 
@@ -109,6 +121,13 @@ namespace MPS {
         return CIEDE2000::CIEDE2000(lab1, lab2);
     }
 
+    double CIEdeltaE::cie2000(const double& L1, const double& a1, const double& b1,
+                              const double& L2, const double& a2, const double& b2){
+        CIEDE2000::LAB lab1 = {L1, a1, b1};
+        CIEDE2000::LAB lab2 = {L2, a2, b2};
+        return CIEDE2000::CIEDE2000(lab1, lab2);
+    }
+
     // DeltaE from XYZ constructor
     CIEdeltaE_frmXYZ::CIEdeltaE_frmXYZ(const double& X1, const double& Y1, const double& Z1,
                                        const double& X2, const double& Y2, const double& Z2, 
@@ -121,4 +140,17 @@ namespace MPS {
 
         _L2 = LAB2[0]; _a2 = LAB2[1]; _b2 = LAB2[2];
     };
+
+    double CIEdeltaE_frmXYZ::cie2000(){
+        return CIEdeltaE::cie2000(_L1, _a1, _b1, _L2, _a2, _b2);
+    }
+    
+    double CIEdeltaE_frmXYZ::cie94(const bool& graphicArts){
+        return CIEdeltaE::cie94(_L1, _a1, _b1, _L2, _a2, _b2, graphicArts);
+    }
+    
+    double CIEdeltaE_frmXYZ::cie76(){
+        return CIEdeltaE::cie76(_L1, _a1, _b1, _L2, _a2, _b2);
+    }
+
 }
