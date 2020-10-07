@@ -61,16 +61,25 @@ namespace MPS {
     };
 
     class phosphorMatrix {
+        private:
+            // internal method used for calculating the forward PM.
+            static Eigen::Matrix3f _generatePM(MPS::colorPrimaries& primaries, 
+                                               const float& actualLum = 100.0, 
+                                               const float& aimLum = 100.0);
+        
         public:
         // Constructors
             /// Default constructor initiates PM and PM^1 matrices with idenity matricies.
             phosphorMatrix();
             
-            // PM Constructor for single primary input. 
+            /// PM Constructor for single primary input. 
             /**Used for going from a primary set to XYZ and vice-versa. \n
              * [In] colorPrimaries object containing specified primaries. Passed by Reference.
             */
             phosphorMatrix(MPS::colorPrimaries& primaries);
+            
+            /// Overloaded constructor for convenience. Constructs internal primary set.
+            phosphorMatrix(const MPS::ColorSpaces& colorSpace);
 
             /// PM Constructor for double primary input.
             /**  Used for translating from one primary set to a second primary set and vice-versa \n
@@ -78,27 +87,30 @@ namespace MPS {
              * [In] colorPrimaries set 2
             */
             phosphorMatrix(MPS::colorPrimaries& primarySet1, MPS::colorPrimaries& primarySet2);
+            
+            /// Overloaded constructor for convenience. Constructs internal primary sets.
+            phosphorMatrix(const MPS::ColorSpaces& colorSpace1, const MPS::ColorSpaces& colorSpace2);
 
         // Member Functions
             /// Generates the PM and Inverse PM from the set of primaries
             /** Calculates the forward and inverse PMs of the given primary sets \n
-             * [In] colorPrimaries the primaries the phosphore matrix should be calcualted for. 
-             *      Passed by reference \n
-             * [In] The acutal luminance the PM should be calculated for. Default = 100 nits \n
-             * [In] The aim luminance the PM should be calculated for. Default = 100 nits \n
-             * [In] Set the private PM members of the object. Default = True. \n
-             * [Return] Forward PM as an Eigen::Matrix3f.
+             * @param [in] primaries  the primaries the phosphore matrix should be calcualted for. Passed by reference \n
+             * @param [in] actualLUm  The acutal luminance the PM should be calculated for. Default = 100 nits \n
+             * @param [in] aimLum     The aim luminance the PM should be calculated for. Default = 100 nits \n
+             * @param [in] setMembers Set the private PM members of the object. Default = True. \n
+             * @return Forward PM as an Eigen::Matrix3f.
              */
-            Eigen::Matrix3f generatePMs(MPS::colorPrimaries& primaries, 
-                                        float actualLum = 100.0, 
-                                        float aimLum = 100.0, 
-                                        bool setMembers = true);
+            Eigen::Matrix3f& generatePM(MPS::colorPrimaries& primaries, 
+                                        const float& actualLum = 100.0, 
+                                        const float& aimLum = 100.0);
+
+
                     
             /// Returns the phosphore matrix stored in the private member as an Eigen::Matrix3f.
-            Eigen::Matrix3f getPM();
+            const Eigen::Matrix3f& getPM() const;
 
             /// Returns the inverse phosphore matrix stored in the private member as an Eigen::Matrix3f.
-            Eigen::Matrix3f getInvPM();
+            const Eigen::Matrix3f& getInvPM() const;
 
         private:
             Eigen::Matrix3f _PM; ///< Private meember function that stores the PM
@@ -119,12 +131,10 @@ namespace MPS {
      *  https://www.dolby.com/us/en/technologies/dolby-vision/measuring-perceptual-color-volume-v7.1.pdf
      *  https://www.dolby.com/us/en/technologies/dolby-vision/ictcp-white-paper.pdf
      * */
-    MPS::tripletF Rec2020_to_ICtCp(float R, float G, float B, 
-                                   bool PQ = true, bool scaleToJNDs = false);
+    MPS::tripletF Rec2020_to_ICtCp(const float& R, const float& G, const float& B, 
+                                   const bool& PQ = true, const bool& scaleToJNDs = false);
 
 
-
-    // Add docs
     /// Converts CIE XYZ values to CIELAB.
     /** 
      * XYZ values should be normalized so that Y = 100.\n

@@ -116,23 +116,37 @@ namespace MPS{
 
     // PM Constructor for single primary input. Used for going from a primary set to XYZ and vice-versa
     MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries& primaries){
-        generatePMs(primaries, 1, 1);
+        generatePM(primaries, 1, 1);
     };
+
+    MPS::phosphorMatrix::phosphorMatrix(const MPS::ColorSpaces& colorSpace){
+        colorPrimaries primaries(colorSpace);
+        generatePM(primaries);
+    }
 
     // PM Constructor for double primary input. Used for going from a primary to a second set and vice-versa
     MPS::phosphorMatrix::phosphorMatrix(MPS::colorPrimaries& primarySet1, MPS::colorPrimaries& primarySet2){
-        Eigen::Matrix3f PM1 = generatePMs(primarySet1, 1, 1, false);
-        Eigen::Matrix3f PM2 = generatePMs(primarySet2, 1, 1, false);
+        Eigen::Matrix3f PM1 = _generatePM(primarySet1, 1, 1);
+        Eigen::Matrix3f PM2 = _generatePM(primarySet2, 1, 1);
         _PM = PM2.inverse() * PM1;
         _invPM = _PM.inverse();
     };
 
+    MPS::phosphorMatrix::phosphorMatrix(const MPS::ColorSpaces& colorSpace1, 
+                                        const MPS::ColorSpaces& colorSpace2){
+        colorPrimaries primarySet1(colorSpace1);
+        colorPrimaries primarySet2(colorSpace2);
+        Eigen::Matrix3f PM1 = _generatePM(primarySet1, 1, 1);
+        Eigen::Matrix3f PM2 = _generatePM(primarySet2, 1, 1);
+        _PM = PM2.inverse() * PM1;
+        _invPM = _PM.inverse();
+    }
+
     // Generate and return the phosphore matrix. 
     // Also sets the the _PM memember
-    Eigen::Matrix3f MPS::phosphorMatrix::generatePMs(MPS::colorPrimaries& primaries, 
-                                                    float actualLum, 
-                                                    float aimLum, 
-                                                    bool setMembers){
+    Eigen::Matrix3f MPS::phosphorMatrix::_generatePM(MPS::colorPrimaries& primaries, 
+                                                     const float& actualLum, 
+                                                     const float& aimLum){
 
         // Fill the (C) Matrix
         Eigen::Matrix3f C_matrix(3,3);
@@ -165,27 +179,32 @@ namespace MPS{
         //Calculate the PM
         Eigen::Matrix3f PM = C_matrix * J_vector.asDiagonal();
 
-        // Set the private member and return the matrix.
-        if(setMembers){
-            _PM = PM;
-            _invPM = PM.inverse();
-        }
         return PM;
     };
 
+    Eigen::Matrix3f& MPS::phosphorMatrix::generatePM(MPS::colorPrimaries& primaries, 
+                                                     const float& actualLum, 
+                                                     const float& aimLum){
+        _PM = _generatePM(primaries, actualLum, aimLum);
+        _invPM = _PM.inverse();
+        return _PM;
+    }
+
+
     // Return the phosphore matrix as an Eigen::Matrix3f
-    Eigen::Matrix3f MPS::phosphorMatrix::getPM(){
+    const Eigen::Matrix3f& MPS::phosphorMatrix::getPM() const{
         return _PM;
     };
     
     // Return the phosphore matrix as an Eigen::Matrix3f
-    Eigen::Matrix3f MPS::phosphorMatrix::getInvPM(){
+    const Eigen::Matrix3f& MPS::phosphorMatrix::getInvPM() const{
         return _invPM;
     };
 
 // Linear RGB Rec 2020 CVs
     // Returns std::array<float, 3> AKA MPS::tripletF of floats in I Ct Cp format.
-    MPS::tripletF Rec2020_to_ICtCp(float R, float G, float B, bool PQ, bool scaleToJNDs){
+    MPS::tripletF Rec2020_to_ICtCp(const float& R, const float& G, const float& B, 
+                                   const bool& PQ, const bool& scaleToJNDs){
      
         //Convert RGB to LMS
         Eigen::Vector3f RGB; RGB << R, G, B;
