@@ -37,7 +37,7 @@ namespace MPS {
             colorPrimaries();
             
             /// Construct the object using a predefined colorspace
-            /** [In]    ColorSpace enum*/ 
+            /** @param [in] colorSpace  Defines which of the predefined colorspaces / primaries to use e.g. Rec709 */
             colorPrimaries(ColorSpaces colorSpace);
 
         // Members 
@@ -48,14 +48,15 @@ namespace MPS {
 
         // Methods
             /// Construct the object using a predefined colorspace
-            /** [In]    ColorSpace enum*/
-            void selectPrimary(ColorSpaces colorspace);
+            /** @param [in] colorSpace  Defines which of the predefined colorspaces / primaries to use e.g. Rec709 */
+            void selectPrimaries(ColorSpaces colorspace);
             
-            void printPrimaries(); ///< Prints the primaries to std out
+            /// Prints the primaries to std out
+            void printPrimaries(); 
 
             /// Construct the object using a predefined colorspace
-            /** [In]    ChromaPoint enum \n
-             * [Return] Returns the specified color corrdinate
+            /** @param [in] chromaPoint defines the x or y value of the specified primary
+             *  @return Returns the value of the specified point
             */
             float getChromaPoint(ChromaPoint chromaPoint); 
     };
@@ -74,19 +75,21 @@ namespace MPS {
             
             /// PM Constructor for single primary input. 
             /**Used for going from a primary set to XYZ and vice-versa. \n
-             * [In] colorPrimaries object containing specified primaries. Passed by Reference.
+             * @param [in] primaries Object containing the colorspace's primaries
             */
             phosphorMatrix(MPS::colorPrimaries& primaries);
             
             /// Overloaded constructor for convenience. Constructs internal primary set.
+            /** @param [in] colorSpace used to specify the colorspace's primaries. */
             phosphorMatrix(const MPS::ColorSpaces& colorSpace);
 
             /// PM Constructor for double primary input.
             /**  Used for translating from one primary set to a second primary set and vice-versa \n
-             * [In] colorPrimaries set 1 \n
-             * [In] colorPrimaries set 2
+             * @param [in] primarySet1 used to specify the "incoming" primaries.
+             * @param [in] primarySet2 used to specify the "outgoing" primaries.
             */
             phosphorMatrix(MPS::colorPrimaries& primarySet1, MPS::colorPrimaries& primarySet2);
+            
             
             /// Overloaded constructor for convenience. Constructs internal primary sets.
             phosphorMatrix(const MPS::ColorSpaces& colorSpace1, const MPS::ColorSpaces& colorSpace2);
@@ -120,11 +123,11 @@ namespace MPS {
     // Converts code values between Rec2020 and the ICtCp Color Space
     /**
      * Input code values should be linear Rec2020 values ie. PQ_RGB = 0-10,000 \n
-     * [In] Rec2020 R CV \n
-     * [In] Rec2020 G CV \n
-     * [In] Rec2020 B CV \n
-     * [In] PQ = true, HLG = false \n
-     * [In] Scale the values to JND \n 
+     * @param [in] R Rec2020 Red code value 
+     * @param [in] G Rec2020 Green code value 
+     * @param [in] B Rec2020 Blue code value 
+     * @param [in] PQ = true, HLG = false 
+     * @param [in] Scale the values to JND 
      * [Return] MPS::tripletF in I, Ct, Cp format \n
      * 
      *  Implementation based on Dolby White Paper "Perceptual Color Volume" and WHAT IS ICTCP?

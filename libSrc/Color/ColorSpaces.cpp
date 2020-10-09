@@ -39,11 +39,11 @@ namespace MPS{
         WhitePoint = array<float, 2> {0,0};
     }
     MPS::colorPrimaries::colorPrimaries(MPS::ColorSpaces colorSpace){
-        MPS::colorPrimaries::selectPrimary(colorSpace);
+        MPS::colorPrimaries::selectPrimaries(colorSpace);
     }
     
     // Methods of MPS colorPrimaries Class
-    void MPS::colorPrimaries::selectPrimary(MPS::ColorSpaces colorspace){
+    void MPS::colorPrimaries::selectPrimaries(MPS::ColorSpaces colorspace){
         switch (colorspace){
             case MPS::Rec709: 
                 Primaries = Rec709_Primaries; 
