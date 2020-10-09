@@ -16,6 +16,7 @@
 
 #include "mpsVersion.hpp"
 #include "TransferFunctions_PyBindings.hpp"
+#include "Color_PyBindings.hpp"
 
 namespace py = pybind11;
 
@@ -31,5 +32,6 @@ PYBIND11_MODULE(py_mpsToolkit, m){
 
     // call the module functions
     TransferFunctions(m);
+    Color(m);
 }
 
