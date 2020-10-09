@@ -41,7 +41,9 @@ add_executable(TEST ./appSrc/testProgram.cpp)
 include_directories(./libSrc/TransferFunctions
                     ./libSrc/Color
                     ./libSrc/Utilities
-                    ./libSrc/Core)
+                    ./libSrc/Core
+                    ./libSrc/
+                    ./ThirdParty)
 
 # Links the MPS toolkit library to Apps
 target_link_libraries(EOTF MPSToolkit)
