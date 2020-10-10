@@ -14,15 +14,18 @@ namespace MPS {
     /// Can be used to time a scope's execution time. Object should be constructed at the begining of the scope.
     /** 
      * Uppon destruction, of the class (at end of scope) the ellapsed time is output using std::cout. \n
-     * example: \n \n
+     * example:
      * 
+     * \code{.cpp}
      * int main(){ \n
-     *      { // start of scope \n
-     *          MPS::ScopeTimer Timer; \n
-     *          //(your code here) \n
-     *      } // end of scope. Time printed. \n
+     *      { // start of scope
+     *          MPS::ScopeTimer Timer;
+     *          //(your code here)
+     *      } // end of scope. Time printed.
      * return(1); \n
      * }
+     * 
+     * \endcode
      * */
     class ScopeTimer {
         private:
@@ -160,14 +163,20 @@ namespace MPS {
         std::vector<std::vector<std::string>> data;
         
         public: 
-        CSVreader();
-        CSVreader(const std::string& filePath, bool strip = false);
-        
         std::string filePath;
 
+
+        CSVreader();
+
+        /// Constructs the CSV reader
+        /** 
+         * Reads in a CSV file 
+         * */
+        CSVreader(const std::string& filePath, bool strip = false);
+        
         /// Reads data to internal data structure
         /** 
-         * If file can not be read, the method throws a std::string exception.
+         * If file cannot be read, the method throws a std::string exception.
          * */
         std::vector<std::vector<std::string>>& read(bool strip = true);
         
