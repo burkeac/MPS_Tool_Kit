@@ -8,12 +8,14 @@
       #include <pybind11/pybind11.h>
       #include <pybind11/stl.h>
       #include <pybind11/eigen.h>
-      #include <../Color/ColorSpaces.hpp> 
+      #include "../Color/ColorSpaces.hpp"
+      #include "../Color/deltaE.hpp"
 #else 
       #include <pybind11\pybind11.h>
       #include <pybind11\stl.h>
       #include <pybind11\eigen.h>
-      #include <..\Color\ColorSpaces.hpp> 
+      #include "..\Color\ColorSpaces.hpp"
+      #include "..\Color\deltaE.hpp"
 #endif
 
 namespace py = pybind11;
@@ -71,7 +73,21 @@ void Color(py::module &m){
         .def("getInvPM", &MPS::phosphorMatrix::getInvPM,
             "Returns the inverse PM as a numpy array");
 
+    py::class_<MPS::CIEdeltaE>(m, "CIEdeltaE")
+        .def(py::init<>())
+        .def(py::init<const double&,const double&,const double&,const double&,const double&,const double&>())
+                    // this type casting/punning is needed because of the overloaded (static) functions
+                    // see: https://pybind11.readthedocs.io/en/stable/classes.html#overloaded-methods
+        .def("cie76", (double (MPS::CIEdeltaE::*)() const) &MPS::CIEdeltaE::cie76)
+        .def("cie94", (double (MPS::CIEdeltaE::*)(const bool&) const) &MPS::CIEdeltaE::cie94, "Calculates CIE Delta E 1994", py::arg("graphicArts"))
+        .def("cie2000", (double (MPS::CIEdeltaE::*)() const) &MPS::CIEdeltaE::cie2000, "Calculates CIE Delta E 2000");
+
+
+    py::class_<MPS::CIEdeltaE_frmXYZ, MPS::CIEdeltaE>(m, "CIEdeltaE_frmXYZ")
+        .def(py::init<const double&,const double&,const double&,const double&,const double&,const double&, const MPS::WhitePoint&>());
+
     // Function bindings
+    // Rec2020_to_ICtCp
     m.def("Rec2020_to_ICtCp", 
           &MPS::Rec2020_to_ICtCp, 
           "Converts code values between Rec2020 and ICtCp",
@@ -81,6 +97,8 @@ void Color(py::module &m){
           py::arg("PQ"),
           py::arg("scaleToJNDs")
     );
+
+    // XYZ_to_cieLAB
     m.def("XYZ_to_cieLAB",
           &MPS::XYZ_to_cieLAB,
           "converts CIE XYZ values to CIELAB. XYZ values should be normalized so that Y = 100. WhitePoint options include D65 and D50",
@@ -89,6 +107,8 @@ void Color(py::module &m){
           py::arg("Z"),
           py::arg("whitePt")
     );
+
+    // cieLAB_to_XYZ
     m.def("cieLAB_to_XYZ",
           &MPS::cieLAB_to_XYZ,
           "LAB values are returned normalized so that Y = 100. WhitePoint options include D65 and D50",
