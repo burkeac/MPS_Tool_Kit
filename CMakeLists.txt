@@ -13,24 +13,25 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 find_package(opencv REQUIRED)
 
 # Create the library
-add_library(MPSToolKit SHARED
-            ./libSrc/Core/macro_typedef.hpp
+add_library(MPSToolkit SHARED
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp
-            ./libSrc/TransferFunctions/HDR_TranFunc.hpp
             ./libSrc/Color/ColorSpaces.cpp
-            ./libSrc/Color/ColorSpaces.hpp
             ./libSrc/Color/deltaE.cpp
-            ./libSrc/Color/deltaE.hpp
+            ./ThirdParty/CIEDE2000/CIEDE2000.cpp
             ./libSrc/Utilities/utilities.cpp
-            ./libSrc/Utilities/utilities.hpp
             ./libSrc/Utilities/programOptions.cpp
             ./libSrc/Utilities/csvReader.cpp
 )
 
 # Find OpenCV package and Link it to the MPSToolKit Libary
-target_link_libraries(MPSToolKit ${OpenCV_LIBRARIES})
+target_link_libraries(MPSToolkit ${OpenCV_LIBRARIES})
 
-# Compile the executables
+# Add Pybind11 and create MPS python module 
+add_subdirectory(ThirdParty/pybind11)
+pybind11_add_module(py_mpsToolkit  ./libSrc/PythonBindings/PythonBindings.cpp)
+target_link_libraries(py_mpsToolkit PUBLIC MPSToolkit)
+
+# Compile the apps executables
 add_executable(EOTF ./appSrc/Calculate_PQ_EOTF.cpp)
 add_executable(GetPrimaries ./appSrc/GetPrimaries.cpp)
 add_executable(ToICtCp ./appSrc/ToICtCp.cpp)
@@ -40,10 +41,12 @@ add_executable(TEST ./appSrc/testProgram.cpp)
 include_directories(./libSrc/TransferFunctions
                     ./libSrc/Color
                     ./libSrc/Utilities
-                    ./libSrc/Core)
+                    ./libSrc/Core
+                    ./libSrc/
+                    ./ThirdParty)
 
 # Links the MPS toolkit library to Apps
-target_link_libraries(EOTF MPSToolKit)
-target_link_libraries(GetPrimaries MPSToolKit)
-target_link_libraries(ToICtCp MPSToolKit)
-target_link_libraries(TEST MPSToolKit)
+target_link_libraries(EOTF MPSToolkit)
+target_link_libraries(GetPrimaries MPSToolkit)
+target_link_libraries(ToICtCp MPSToolkit)
+target_link_libraries(TEST MPSToolkit)

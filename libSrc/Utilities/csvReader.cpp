@@ -16,7 +16,9 @@ namespace MPS {
         : filePath("") {}
 
     CSVreader::CSVreader(const std::string& filePath, bool strip)
-        : filePath(filePath) { }
+        : filePath(filePath) { 
+            read(strip);
+        }
     
     std::vector<std::vector<std::string>>& CSVreader::read(bool strip){
 

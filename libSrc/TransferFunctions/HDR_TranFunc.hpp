@@ -18,12 +18,12 @@ namespace MPS{
     float PQ_2_Linear(const float input);
 
     // Apply the OETF of BT.2100 HLG to the input
-    // [in]     scene linear light
+    // [in]     linear light
     // [return] HLG encoded value 
     float Linear_2_HLG(const float input);
 
     // Apply the inverse OETF of BT.2100 HLG to the input
     // [in]     HLG encoded value 
-    // [return] Scene linear light
+    // [return] linear light
     float HLG_2_Linear(const float input);
 }
