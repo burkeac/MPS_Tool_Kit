@@ -136,4 +136,9 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
         }
         std::cout << std::endl;
     }
+
+    bool ProgramOptions::operator[](const std::string& flag){
+        std::string pole = (flag.length() > 1) ? "--" : "-";
+        return(_findOption(pole+flag)->selected);
+    }
 }

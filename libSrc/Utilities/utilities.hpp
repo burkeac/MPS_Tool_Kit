@@ -156,6 +156,8 @@ namespace MPS {
         /// Outputs help screen through stdout (std::cout).
         /** outlines usage and options */
         void showHelp();
+
+        bool operator[](const std::string& flag);
     };
 
     class CSVreader{
@@ -201,5 +203,8 @@ namespace MPS {
     /// Removes leading and trailing spaces from string 
     std::string strip(const std::string& input);
 
+    /// Returns the extension of a file.
+    /** A file path of "data.csv" would return ".csv" */
+    std::string ExtensionFromPath(const std::string& path, const bool ToLower = true);
 
 }
