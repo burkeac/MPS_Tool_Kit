@@ -77,6 +77,7 @@ namespace MPS {
         void _enableOption(const std::string& flag);
 
         protected:
+        /// internal proxy class to enable method chaining.
         class OptionProxy{
             OptionProxy(ProgramOptions* mainObject, const std::string flag)
             : _mainObject(mainObject), _flag(flag){}
