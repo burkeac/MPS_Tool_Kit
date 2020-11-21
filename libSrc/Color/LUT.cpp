@@ -9,6 +9,14 @@
 #include <iostream>
 #include <string>
 
+#ifndef _WIN32
+    #include "../../ThirdParty/Eigen/Core"
+    #include "../../ThirdParty/Eigen/Eigen"
+#else
+    #include "..\..\ThirdParty\Eigen\Core"
+    #include "..\..\ThirdParty\Eigen\Eigen"
+#endif
+
 #include "LUT.hpp"
 #include "utilities.hpp"
  
@@ -440,4 +448,118 @@ tripletF LUT3D::Interpolate_Trilin(const float R, const float G, const float B){
     return {rC,gC,bC};
 }
 
+tripletF LUT3D::Interpolate_Tetra(const float R, const float G, const float B){
+    float deltaR = _getScaleFactor(R);
+    float deltaG = _getScaleFactor(G);
+    float deltaB = _getScaleFactor(B);
+
+    Eigen::MatrixXf T1(4,8);
+    T1 << 1.f, 0.f, 0.f, 0.f, 0.f, 0.f,  0.f, 0.f,
+         -1.f, 0.f, 0.f, 0.f, 1.f, 0.f,  0.f, 0.f,
+          0.f, 0.f, 0.f, 0.f,-1.f, 0.f,  1.f, 0.f,
+          0.f, 0.f, 0.f, 0.f, 0.f, 0.f, -1.f, 1.f;
+    
+    Eigen::MatrixXf T2(4,8);
+    T2 << 1.f, 0.f, 0.f, 0.f,  0.f,  0.f, 0.f, 0.f,
+         -1.f, 0.f, 0.f, 0.f,  1.f,  0.f, 0.f, 0.f,
+          0.f, 0.f, 0.f, 0.f,  0.f, -1.f, 0.f, 1.f,
+          0.f, 0.f, 0.f, 0.f, -1.f,  1.f, 0.f, 0.f;
+
+    Eigen::MatrixXf T3(4,8);
+    T3 << 1.f,  0.f, 0.f, 0.f, 0.f,  0.f, 0.f, 0.f,
+          0.f, -1.f, 0.f, 0.f, 0.f,  1.f, 0.f, 0.f,
+          0.f,  0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 1.f,
+         -1.f,  1.f, 0.f, 0.f, 0.f,  0.f, 0.f, 0.f;
+
+    Eigen::MatrixXf T4(4,8);
+    T4 <<  1.f, 0.f,  0.f, 0.f, 0.f, 0.f,  0.f, 0.f,
+           0.f, 0.f, -1.f, 0.f, 0.f, 0.f,  1.f, 0.f,
+          -1.f, 0.f,  1.f, 0.f, 0.f, 0.f,  0.f, 0.f,
+           0.f, 0.f,  0.f, 0.f, 0.f, 0.f, -1.f, 1.f;
+
+    Eigen::MatrixXf T5(4,8);
+    T5 <<  1.f, 0.f,  0.f,  0.f, 0.f, 0.f, 0.f, 0.f,
+           0.f, 0.f,  0.f, -1.f, 0.f, 0.f, 0.f, 1.f,
+          -1.f, 0.f,  1.f,  0.f, 0.f, 0.f, 0.f, 0.f,
+           0.f, 0.f, -1.f,  1.f, 0.f, 0.f, 0.f, 0.f;
+
+    Eigen::MatrixXf T6(4,8);
+    T6 <<  1.f,  0.f, 0.f,  0.f, 0.f, 0.f, 0.f, 0.f,
+           0.f,  0.f, 0.f, -1.f, 0.f, 0.f, 0.f, 1.f,
+           0.f, -1.f, 0.f,  1.f, 0.f, 0.f, 0.f, 0.f,
+          -1.f,  1.f, 0.f,  0.f, 0.f, 0.f, 0.f, 0.f;
+
+    Eigen::VectorXf deltaT(4);
+    deltaT << 1, deltaB, deltaR, deltaG;
+
+    tripletF result = {0,0,0};
+
+    // For the red CV
+    Eigen::VectorXf V_red(8);
+    V_red << _getC({0,0,0}, {R,G,B}, red),
+            _getC({0,1,0}, {R,G,B}, red),
+            _getC({1,0,0}, {R,G,B}, red),
+            _getC({1,1,0}, {R,G,B}, red),
+            _getC({0,0,1}, {R,G,B}, red),
+            _getC({0,1,1}, {R,G,B}, red),
+            _getC({1,0,1}, {R,G,B}, red),
+            _getC({1,1,1}, {R,G,B}, red);
+
+    Eigen::VectorXf V_green(8);
+    V_green << _getC({0,0,0}, {R,G,B}, green),
+               _getC({0,1,0}, {R,G,B}, green),
+               _getC({1,0,0}, {R,G,B}, green),
+               _getC({1,1,0}, {R,G,B}, green),
+               _getC({0,0,1}, {R,G,B}, green),
+               _getC({0,1,1}, {R,G,B}, green),
+               _getC({1,0,1}, {R,G,B}, green),
+               _getC({1,1,1}, {R,G,B}, green);
+
+    Eigen::VectorXf V_blue(8);
+    V_blue << _getC({0,0,0}, {R,G,B}, blue),
+              _getC({0,1,0}, {R,G,B}, blue),
+              _getC({1,0,0}, {R,G,B}, blue),
+              _getC({1,1,0}, {R,G,B}, blue),
+              _getC({0,0,1}, {R,G,B}, blue),
+              _getC({0,1,1}, {R,G,B}, blue),
+              _getC({1,0,1}, {R,G,B}, blue),
+              _getC({1,1,1}, {R,G,B}, blue);
+
+    if((deltaB > deltaR) && (deltaR > deltaG)){
+        result[red]   = (deltaT.transpose() * T1 * V_red  ).value();
+        result[green] = (deltaT.transpose() * T1 * V_green).value();
+        result[blue]  = (deltaT.transpose() * T1 * V_blue ).value();
+    }
+    else if((deltaB > deltaG) && (deltaG > deltaR)){
+        result[red]   = (deltaT.transpose() * T2 * V_red  ).value();
+        result[green] = (deltaT.transpose() * T2 * V_green).value();
+        result[blue]  = (deltaT.transpose() * T2 * V_blue ).value();
+    }
+    else if((deltaG > deltaB) && (deltaB > deltaR)){
+        result[red]   = (deltaT.transpose() * T3 * V_red  ).value();
+        result[green] = (deltaT.transpose() * T3 * V_green).value();
+        result[blue]  = (deltaT.transpose() * T3 * V_blue ).value();
+    }
+    else if((deltaR > deltaB) && (deltaB > deltaG)){
+        result[red]   = (deltaT.transpose() * T4* V_red  ).value();
+        result[green] = (deltaT.transpose() * T4* V_green).value();
+        result[blue]  = (deltaT.transpose() * T4* V_blue ).value();
+    }
+    else if((deltaR > deltaG) && (deltaG > deltaB)){
+        result[red]   = (deltaT.transpose() * T5 * V_red  ).value();
+        result[green] = (deltaT.transpose() * T5 * V_green).value();
+        result[blue]  = (deltaT.transpose() * T5 * V_blue ).value();
+    }
+    else{
+        result[red]   = (deltaT.transpose() * T6 * V_red  ).value();
+        result[green] = (deltaT.transpose() * T6 * V_green).value();
+        result[blue]  = (deltaT.transpose() * T6 * V_blue ).value();
+    }
+
+    result[red] = abs(result[red]);
+    result[green] = abs(result[green]);
+    result[blue] = abs(result[blue]);
+
+    return result;
+}
 } // end namespace

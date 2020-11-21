@@ -129,5 +129,18 @@ class LUT3D {
      * */
     tripletF Interpolate_Trilin(const float R, const float G, const float B);
 
+    /// Returns the interpolated values of the supplied 3D LUT using the tetrahedral interpolation method.
+    /**
+     * Uses the tetrahedral interpolation method to generate output cove values. All inputs should be normalized 
+     * between 0-1. 
+     * @param [in] R the input code value for the red channel.
+     * @param [in] G the input code value for the green channel.
+     * @param [in] B the input code value for the blue channel.
+     * @return An array of floating point numbers in the order of [RGB]
+     * 
+     * </br></br>Reference: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi7_Ozzq5LtAhWPdN8KHY_RBJkQFjADegQIBBAC&url=https%3A%2F%2Fcommunity.acescentral.com%2Fuploads%2Fdefault%2Foriginal%2F2X%2F5%2F518c5ede1ca11c4a7e13f9c7350e2228bb8762c7.pdf&usg=AOvVaw0V1HmuA841HaKUIuSEPWt4
+     * */   
+    tripletF Interpolate_Tetra(const float R, const float G, const float B);
+
 };
 }
