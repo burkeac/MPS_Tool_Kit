@@ -556,10 +556,6 @@ tripletF LUT3D::Interpolate_Tetra(const float R, const float G, const float B){
         result[blue]  = (deltaT.transpose() * T6 * V_blue ).value();
     }
 
-    result[red] = abs(result[red]);
-    result[green] = abs(result[green]);
-    result[blue] = abs(result[blue]);
-
     return result;
 }
 } // end namespace
