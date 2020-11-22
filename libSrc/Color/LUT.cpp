@@ -24,7 +24,7 @@ enum{ red, green, blue };
 
 namespace MPS{
 
-LUT3D::LUT3D(const uint8_t& numNodes)
+LUT3D::LUT3D(const uint8_t numNodes)
     : numNodes(numNodes){
     _Allocate3D_Data();
 }

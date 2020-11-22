@@ -10,12 +10,14 @@
       #include <pybind11/eigen.h>
       #include "../Color/ColorSpaces.hpp"
       #include "../Color/deltaE.hpp"
+      #include "../Color/LUT.hpp"
 #else 
       #include <pybind11\pybind11.h>
       #include <pybind11\stl.h>
       #include <pybind11\eigen.h>
       #include "..\Color\ColorSpaces.hpp"
       #include "..\Color\deltaE.hpp"
+      #include "..\Color\LUT.hpp"
 #endif
 
 namespace py = pybind11;
@@ -76,6 +78,7 @@ void Color(py::module &m){
     py::class_<MPS::CIEdeltaE>(m, "CIEdeltaE")
         .def(py::init<>())
         .def(py::init<const double&,const double&,const double&,const double&,const double&,const double&>())
+
                     // this type casting/punning is needed because of the overloaded (static) functions
                     // see: https://pybind11.readthedocs.io/en/stable/classes.html#overloaded-methods
         .def("cie76", (double (MPS::CIEdeltaE::*)() const) &MPS::CIEdeltaE::cie76)
@@ -85,6 +88,62 @@ void Color(py::module &m){
 
     py::class_<MPS::CIEdeltaE_frmXYZ, MPS::CIEdeltaE>(m, "CIEdeltaE_frmXYZ")
         .def(py::init<const double&,const double&,const double&,const double&,const double&,const double&, const MPS::WhitePoint&>());
+
+
+    // 3D LUT class
+    py::class_<MPS::LUT3D> LUT3D(m, "LUT3D");
+    LUT3D.def(py::init<>())
+        .def(py::init<const uint8_t>())
+        .def_readwrite("numNodes", &MPS::LUT3D::numNodes)
+        .def("Generate_3DLUT_Nodes", &MPS::LUT3D::Generate_3DLUT_Nodes,
+            "Generates the inital code values so that in = out. aka a NULL LUT")
+        .def("Write2CSV", &MPS::LUT3D::Write2CSV, 
+            "Writes the data to a CSV file in the RGB format, where the blue channel changes most frequently.",
+             py::arg("filePath"), 
+             py::arg("writeHeaders"), 
+             py::arg("scale_bitdepth")
+        )
+        .def("Write2CUBE_Adobe", &MPS::LUT3D::Write2CUBE_Adobe,
+            "Writes to an Adobe(C)/IRIDAS(C) .cube file",
+            py::arg("filePath"),
+            py::arg("Params")
+        )
+        .def("Write2CUBE_BM", &MPS::LUT3D::Write2CUBE_BM,
+            "Writes to a Black Magic .cube file",
+            py::arg("filePath"),
+            py::arg("Params")
+        )
+        .def("ReadFromCSV", &MPS::LUT3D::ReadFromCSV,
+            "Reads from a specified CSV file containing 3D LUT data.",
+            py::arg("filePath"),
+            py::arg("scale_bitdepth")
+        )
+        .def("ReadFromCubeFile", &MPS::LUT3D::ReadFromCubeFile,
+            "Reads from a specified CSV file containing 3D LUT data.",
+            py::arg("filePath"),
+            py::arg("CUBE_Params")
+        )
+        .def("Interpolate_Trilin", &MPS::LUT3D::Interpolate_Trilin,
+            "Returns the interpolated values of the supplied 3D LUT using the trilinear interpolation method.",
+            py::arg("Red CV"),
+            py::arg("Green CV"),
+            py::arg("Blue CV")
+        )
+        .def("Interpolate_Tetra", &MPS::LUT3D::Interpolate_Tetra,
+            "Returns the interpolated values of the supplied 3D LUT using the tetrahedral interpolation method.",
+            py::arg("Red CV"),
+            py::arg("Green CV"),
+            py::arg("Blue CV")
+        );
+
+
+    // LUT3D Subclass
+    py::class_<MPS::LUT3D::CUBE_Params>(LUT3D, "CUBE_Params")
+        .def(py::init<>())
+        .def_readwrite("TITLE", &MPS::LUT3D::CUBE_Params::TITLE)
+        .def_readwrite("DOMAIN_MIN", &MPS::LUT3D::CUBE_Params::DOMAIN_MIN)
+        .def_readwrite("DOMAIN_MAX", &MPS::LUT3D::CUBE_Params::DOMAIN_MAX);
+
 
     // Function bindings
     // Rec2020_to_ICtCp

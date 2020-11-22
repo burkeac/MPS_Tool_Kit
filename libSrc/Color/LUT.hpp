@@ -33,6 +33,7 @@ class LUT3D {
     uint8_t numNodes;
 
     struct CUBE_Params{
+        CUBE_Params(){}
         std::string TITLE = "";
         tripletF DOMAIN_MIN = {0.0f,0.0f,0.0f};
         tripletF DOMAIN_MAX = {1.0f,1.0f,1.0f};
@@ -44,7 +45,7 @@ class LUT3D {
      * \note It is recomended that the number of nodes follows the sequence: 2^x+1. 
      * Example: nodes = {9, 17, 33, 65}. This is to ensure uniform spacing between code values.
      * */
-    LUT3D(const uint8_t& numNodes);
+    LUT3D(const uint8_t numNodes);
 
     /// Generates the inital code values
     /** 
@@ -78,7 +79,8 @@ class LUT3D {
      * */
     void Write2CUBE_Adobe(const std::string& filePath, 
                           const CUBE_Params* Params = NULL);
-/// Writes to an Adobe(C)/IRIDAS(C) .cube file
+    
+    /// Writes to a Black Magic .cube file
     /**
      * Writes the data to a Black Magic cube file. 
      * \param [in] filePath  The path of the file to be written.
