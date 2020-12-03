@@ -4,12 +4,21 @@
 
 #pragma once
 #include <vector>
+#include <functional>
 #include "macro_typedef.hpp"
+
+#ifndef _WIN32
+    #include "../../ThirdParty/Eigen/Core"
+    #include "../../ThirdParty/Eigen/Eigen"
+#else
+    #include "..\..\ThirdParty\Eigen\Core"
+    #include "..\..\ThirdParty\Eigen\Eigen"
+#endif
 
 namespace MPS {
 
 class LUT3D {
-    private:
+    protected:
     /// Internal Data structure for the LUT3D class.
     /*  
     Data should be stored in RGB index order. Access to the "output" code values
@@ -28,12 +37,12 @@ class LUT3D {
     void _Allocate3D_Data();
     inline float _getC(const tripletB node, const tripletF CV, const int chan);
     inline float _getScaleFactor(const float cord);
-
-    public:
     uint8_t numNodes;
 
+    public:
+
     struct CUBE_Params{
-        CUBE_Params(){}
+        // CUBE_Params(){}
         std::string TITLE = "";
         tripletF DOMAIN_MIN = {0.0f,0.0f,0.0f};
         tripletF DOMAIN_MAX = {1.0f,1.0f,1.0f};
@@ -53,6 +62,9 @@ class LUT3D {
      * where input = output 
      */
     void Generate_3DLUT_Nodes();
+
+    /// Returns the number of nodes the LUT contains
+    int GetNumNodes();
 
     /// Writes the LUT to a CSV file.
     /**
@@ -93,7 +105,9 @@ class LUT3D {
     /// Reads from a specified CSV file containing 3D LUT data.
     /** 
      * The data within the CSV file should be in RGB format, where the blue channel
-     * changes most frequently. 
+     * changes most frequently. If the number of nodes has been specified via the 
+     * constructor, that number will be used. Otherwise, the number of nodes will be 
+     * determined by the number of rows in the CSV file.
      * 
      * \param [in] FilePath The path of the file to be read.
      * \param [in] scale_bitdepth The bitdepth the code values must be scaled down from.
@@ -140,9 +154,48 @@ class LUT3D {
      * @param [in] B the input code value for the blue channel.
      * @return An array of floating point numbers in the order of [RGB]
      * 
-     * </br></br>Reference: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi7_Ozzq5LtAhWPdN8KHY_RBJkQFjADegQIBBAC&url=https%3A%2F%2Fcommunity.acescentral.com%2Fuploads%2Fdefault%2Foriginal%2F2X%2F5%2F518c5ede1ca11c4a7e13f9c7350e2228bb8762c7.pdf&usg=AOvVaw0V1HmuA841HaKUIuSEPWt4
+     * </br></br>Reference: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwi7_Ozzq5Lt
+     *AhWPdN8KHY_RBJkQFjADegQIBBAC&url=https%3A%2F%2Fcommunity.acescentral.com%2Fuploads%2Fdefault%2Foriginal%2F
+     *2X%2F5%2F518c5ede1ca11c4a7e13f9c7350e2228bb8762c7.pdf&usg=AOvVaw0V1HmuA841HaKUIuSEPWt4
      * */   
     tripletF Interpolate_Tetra(const float R, const float G, const float B);
 
+    /// Generates a 3D LUT using a supplied 3 x n eigen matrix
+    /** 
+     * This method generates a matrix based on the supplied matrix as an Eigen::Marix3Xf. Standard values
+     * should be between 0-1. Each row should correspond to RGB out. 
+     * @param [in] inputMatrix The matrix to generate the LUT from 
+     * 
+     * */
+    void GenerateFromMatrix(const Eigen::Matrix3Xf& inputMatrix);
+
+    /// Generates a 3D LUT using a supplied function.
+    /**
+     * This function will generate a 3D LUT based on a supplied function, passed as a 
+     * function pointer. The function signature should be:
+     * 
+     * \code{.cpp}
+     *                           // Input CVs normalized 0-1.
+     *  MPS::tripletF yourFunction(float r, float g, float b){
+     *      // your code
+     * 
+     *      return{Rout, Gout, Bout};
+     *  }
+     * \endcode
+     * 
+     * This method allows more complex LUTs to be generated (including non-linear) than what is possible 
+     * with a 3 x n matrix.
+     * 
+     * \param [in] function Pointer to the function that should be used to generate the LUT
+     * */
+    void GenerateFromFunction(tripletF (*function)(float, float, float));
+
+    /// Generates a 3D LUT using a supplied function.
+    /** 
+     * \overload
+     * 
+     * Note: The Python API binds to this function
+     * */
+    void GenerateFromFunction(std::function<tripletF(float, float, float)> &function);
 };
 }

@@ -59,6 +59,10 @@ void LUT3D::Generate_3DLUT_Nodes(){
     }
 }
 
+int LUT3D::GetNumNodes(){
+    return numNodes;
+}
+
 void LUT3D::Write2CSV(const std::string& filePath, 
                       bool writeHeaders, 
                       uint16_t scale_bitdepth){
@@ -197,11 +201,7 @@ void LUT3D::Write2CUBE_BM(const std::string& filePath,
 
 void LUT3D::ReadFromCSV(const std::string& filePath, 
                         uint8_t scale_bitdepth){
-
-    if(numNodes == 0){
-        throw(std::invalid_argument("Number of nodes must be defined"));
-        return;
-    }
+   
     CSVreader CSVFile(filePath, true);
     auto csvdata = CSVFile.getRef();
     bool hasHeaders = false;
@@ -214,6 +214,14 @@ void LUT3D::ReadFromCSV(const std::string& filePath,
                 break;
             }
         }
+    }
+    
+    if(numNodes == 0){
+        if(hasHeaders)
+            numNodes = std::cbrt(csvdata.size()-1);
+        else
+            numNodes = std::cbrt(csvdata.size());
+        _Allocate3D_Data();
     }
 
     if(scale_bitdepth == 0){
@@ -558,4 +566,52 @@ tripletF LUT3D::Interpolate_Tetra(const float R, const float G, const float B){
 
     return result;
 }
+
+void LUT3D::GenerateFromMatrix(const Eigen::Matrix3Xf& inputMatrix){
+    
+    Eigen::Vector3f LUTcvs;
+    float divFactor = numNodes - 1.0;
+
+    for(int R=0; R<numNodes; R++){
+        for(int G=0; G<numNodes; G++){
+            for(int B=0; B<numNodes; B++){
+                LUTcvs << (float) R / divFactor, (float) G / divFactor, (float) B / divFactor;
+
+                auto result = inputMatrix * LUTcvs;
+                _data[R][G][B][0] = result[0];
+                _data[R][G][B][1] = result[1];
+                _data[R][G][B][2] = result[2];
+
+            }
+        }
+    }
+}
+
+void LUT3D::GenerateFromFunction(tripletF (*function)(float, float, float)){
+    
+    float divFactor = numNodes - 1.0;
+
+    for(int R=0; R<numNodes; R++){
+        for(int G=0; G<numNodes; G++){
+            for(int B=0; B<numNodes; B++){
+                tripletF result = function(R/divFactor, G/divFactor, B/divFactor);
+                _data[R][G][B] = result;
+            }
+        }
+    }
+}
+
+void LUT3D::GenerateFromFunction(std::function<tripletF(float, float, float)> &function){
+    float divFactor = numNodes - 1.0;
+
+    for(int R=0; R<numNodes; R++){
+        for(int G=0; G<numNodes; G++){
+            for(int B=0; B<numNodes; B++){
+                tripletF result = function(R/divFactor, G/divFactor, B/divFactor);
+                _data[R][G][B] = result;
+            }
+        }
+    }
+}
+
 } // end namespace
