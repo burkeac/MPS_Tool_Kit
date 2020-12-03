@@ -46,19 +46,22 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
     }
 
 // Public Members
-    void ProgramOptions::addOption(const std::string shortFlag,
-                                   const std::string longFlag){
+    ProgramOptions::OptionProxy ProgramOptions::addOption(const std::string shortFlag,
+                                                          const std::string longFlag){
         if(shortFlag.length() > 1) 
             std::cerr << "Development warning: 'const std::string shortFlag' should not exceed 1 charecter" << std::endl;
         _options.push_back( ProgramOptions::OptionObj(shortFlag, longFlag) );
+        return ProgramOptions::OptionProxy(this, shortFlag);
     }
 
-    void ProgramOptions::addOption_SF(const std::string shortFlag){
+    ProgramOptions::OptionProxy ProgramOptions::addOption_SF(const std::string shortFlag){
         _options.push_back( ProgramOptions::OptionObj(shortFlag, true) );
+        return ProgramOptions::OptionProxy(this, shortFlag);
     } 
     
-    void ProgramOptions::addOption_LF(const std::string longFlag){
+    ProgramOptions::OptionProxy ProgramOptions::addOption_LF(const std::string longFlag){
         _options.push_back( ProgramOptions::OptionObj(longFlag, false) );
+        return ProgramOptions::OptionProxy(this, longFlag);
     }
 
     // returns the state of the option (true or false)
@@ -72,7 +75,7 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
        _findOption(pole+flag)->_helpText = helpText;
     }
 
-    void ProgramOptions::numOptionParams(std::string flag, int num){
+    void ProgramOptions::numOptionParams(std::string flag, unsigned int num){
         std::string pole = (flag.length() > 1) ? "--" : "-";
        _findOption(pole+flag)->numParams = num;
     }
@@ -135,5 +138,22 @@ ProgramOptions::OptionObj* ProgramOptions::_findOption(const std::string& flag) 
             }
         }
         std::cout << std::endl;
+    }
+
+
+    // proxy object
+    ProgramOptions::OptionProxy ProgramOptions::OptionProxy::addOptionHelpText(std::string helpText){
+        _mainObject->addOptionHelpText(_flag, helpText);
+        return *this;
+    }
+
+    ProgramOptions::OptionProxy ProgramOptions::OptionProxy::numOptionParams(unsigned int num){
+        _mainObject->numOptionParams(_flag, num);
+        return *this;
+    }
+
+    bool ProgramOptions::operator[](const std::string& flag){
+        std::string pole = (flag.length() > 1) ? "--" : "-";
+        return(_findOption(pole+flag)->selected);
     }
 }

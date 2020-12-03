@@ -38,11 +38,10 @@ namespace MPS {
 
     class ProgramOptions {
         private:
-
         //sub object used to contain the options
         struct OptionObj {
             std::string _shortFlag, _longFlag, _helpText;
-            int numParams;
+            unsigned int numParams;
             std::vector<std::string> optionArgs;
             bool selected;
 
@@ -77,6 +76,19 @@ namespace MPS {
         OptionObj* _findOption(const std::string& flag);
         void _enableOption(const std::string& flag);
 
+        protected:
+        /// internal proxy class to enable method chaining.
+        class OptionProxy{
+            OptionProxy(ProgramOptions* mainObject, const std::string flag)
+            : _mainObject(mainObject), _flag(flag){}
+            MPS::ProgramOptions* _mainObject;
+            std::string _flag;
+            friend MPS::ProgramOptions;
+            public:
+            MPS::ProgramOptions::OptionProxy addOptionHelpText(std::string helpText);
+            MPS::ProgramOptions::OptionProxy numOptionParams(unsigned int num);
+        };
+
         public:
 
         /// Constructor for program options.
@@ -106,12 +118,12 @@ namespace MPS {
          * Example code: options.addOption("h", "help"); \n
          * On Commandline: -h or --help
          * */
-        void addOption(const std::string shortFlag, 
+        OptionProxy addOption(const std::string shortFlag, 
                         const std::string longflag);
         
-        void addOption_SF(const std::string shortFlag);
+        OptionProxy addOption_SF(const std::string shortFlag);
 
-        void addOption_LF(const std::string longflag);
+        OptionProxy addOption_LF(const std::string longflag);
 
         /// Returns the state of the object (true or false)
         /** 
@@ -138,7 +150,7 @@ namespace MPS {
          * X on the otherhand, belongs to the globabl ProgramOptions member.
          * \n option-arguments can be accessed using the getOptionParams(std::string flag) method.
          * */
-        void numOptionParams(std::string flag, int num);
+        void numOptionParams(std::string flag, unsigned int num);
 
         /// Acess params associated with an option flag
         /** 
@@ -156,6 +168,8 @@ namespace MPS {
         /// Outputs help screen through stdout (std::cout).
         /** outlines usage and options */
         void showHelp();
+
+        bool operator[](const std::string& flag);
     };
 
     class CSVreader{
@@ -201,5 +215,8 @@ namespace MPS {
     /// Removes leading and trailing spaces from string 
     std::string strip(const std::string& input);
 
+    /// Returns the extension of a file.
+    /** A file path of "data.csv" would return "csv" */
+    std::string ExtensionFromPath(const std::string& path, const bool ToLower = true);
 
 }

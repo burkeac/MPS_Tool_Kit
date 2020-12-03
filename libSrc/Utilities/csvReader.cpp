@@ -45,6 +45,7 @@ namespace MPS {
 
             data.push_back(dataRow);
         }
+        file.close();
         return data;
     }
 

@@ -17,6 +17,7 @@ add_library(MPSToolkit SHARED
             ./libSrc/TransferFunctions/HDR_TranFunc.cpp
             ./libSrc/Color/ColorSpaces.cpp
             ./libSrc/Color/deltaE.cpp
+            ./libSrc/Color/LUT.cpp
             ./ThirdParty/CIEDE2000/CIEDE2000.cpp
             ./libSrc/Utilities/utilities.cpp
             ./libSrc/Utilities/programOptions.cpp
@@ -35,6 +36,7 @@ target_link_libraries(py_mpsToolkit PUBLIC MPSToolkit)
 add_executable(EOTF ./appSrc/Calculate_PQ_EOTF.cpp)
 add_executable(GetPrimaries ./appSrc/GetPrimaries.cpp)
 add_executable(ToICtCp ./appSrc/ToICtCp.cpp)
+add_executable(LUT ./appSrc/LUT_App.cpp)
 add_executable(TEST ./appSrc/testProgram.cpp)
 
 # Show Cmake where to find the header files
@@ -49,4 +51,5 @@ include_directories(./libSrc/TransferFunctions
 target_link_libraries(EOTF MPSToolkit)
 target_link_libraries(GetPrimaries MPSToolkit)
 target_link_libraries(ToICtCp MPSToolkit)
+target_link_libraries(LUT MPSToolkit)
 target_link_libraries(TEST MPSToolkit)
