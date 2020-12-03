@@ -5,19 +5,95 @@
 #include "utilities.hpp"
 #include "deltaE.hpp"
 #include "ColorSpaces.hpp"
+#include "LUT.hpp"
+
+    #include "../../ThirdParty/Eigen/Core"
+    #include "../../ThirdParty/Eigen/Eigen"
 
 #include <thread>
 #include <chrono>
 
 using namespace std;
 
+
+MPS::tripletF myFunc(float r, float g, float b){
+
+    float R = pow(r-.5,3) / .4 + pow(r-.5,2) / .4 + .1;
+    float G = pow(g-.5,3) / .4 + pow(g-.5,2) / .4 + .1;
+    float B = pow(b-.5,3) / .4 + pow(b-.5,2) / .4 + .1;
+
+
+    return {
+        // r*.9f + b*.1f, 
+        // .1f*r + .8f*g + .1f*b, 
+        // .2f*r + .8f*b
+        R,G,B
+        };
+}
+
 int main(int argc, char* argv[]){
 
-    MPS::CSVreader data(argv[1]);
+    MPS::LUT3D LUT;
+    // LUT.ReadFromCSV("/Users/adamburke/Documents/2019/MPS_Toolkit/build/roundTrip.csv", 10);
 
-    cout << data[1][1] << endl;
+    MPS::LUT3D::CUBE_Params params;
+    LUT.ReadFromCubeFile("/Users/adamburke/Documents/2019/MPS_Toolkit/build/CubeTest.cube", &params);
 
-    // std::cout << data[0][1] << std::endl;
+    cout << params.TITLE << endl;
+
+    float scaleFactor = 1023.0;
+
+    float Rin = stof(argv[1]) / scaleFactor;
+    float Gin = stof(argv[2]) / scaleFactor;
+    float Bin = stof(argv[3]) / scaleFactor;
+
+    auto InterpResult = LUT.Interpolate_Trilin(Rin, Gin, Bin);
+    cout << InterpResult[0] * scaleFactor << " " << InterpResult[1] * scaleFactor << " " << InterpResult[2] * scaleFactor << std::endl;
+
+
+/*
+    MPS::LUT3D LUT(17);
+    // Eigen::Matrix3f matrix;
+    // matrix << .9,0,.1,
+    //           .1,.8,.1,
+    //           .2,0,.8;
+    // LUT.GenerateFromMatrix(matrix);
+
+
+    LUT.GenerateFromFunction(myFunc);
+
+    float scaleFactor = 1023.0;
+
+    float Rin = stof(argv[1]) / scaleFactor;
+    float Gin = stof(argv[2]) / scaleFactor;
+    float Bin = stof(argv[3]) / scaleFactor;
+
+    Eigen::Vector3f CVin;
+    CVin << Rin, Gin, Bin;
+    // auto MatrixResult = matrix * CVin;
+    
+    auto MatrixResult = myFunc(Rin, Gin, Bin);
+
+    auto InterpResult = LUT.Interpolate_Trilin(Rin, Gin, Bin);
+    auto InterpResult2 = LUT.Interpolate_Tetra(Rin, Gin, Bin);
+
+
+    cout << "Result:   " << MatrixResult[0] * scaleFactor << " " << MatrixResult[1] * scaleFactor << " " << MatrixResult[2] * scaleFactor << std::endl;
+    cout << "Interp 1: " << InterpResult[0] * scaleFactor << " " << InterpResult[1] * scaleFactor << " " << InterpResult[2] * scaleFactor << std::endl;
+    cout << "Interp 2: " << InterpResult2[0] * scaleFactor << " " << InterpResult2[1] * scaleFactor << " " << InterpResult2[2] * scaleFactor << std::endl;
+*/
+
+
+
+    // LUT.ReadFromCSV(argv[1], 10);
+
+
+    // auto interpTet = LUT.Interpolate_Tetra(stof(argv[2])/scaleFactor, stof(argv[3])/scaleFactor, stof(argv[4])/scaleFactor);
+    // auto interpTri = LUT.Interpolate_Trilin(stof(argv[2])/scaleFactor, stof(argv[3])/scaleFactor, stof(argv[4])/scaleFactor);
+
+    // cout << "\n\n";
+    // cout << "Tri " << interpTri[0]*scaleFactor << " " << interpTri[1]*scaleFactor <<  " " << interpTri[2]*scaleFactor << endl;
+    // cout << "Tet " << interpTet[0]*scaleFactor << " " << interpTet[1]*scaleFactor <<  " " << interpTet[2]*scaleFactor << endl;
 
     return EXIT_SUCCESS;
 }
